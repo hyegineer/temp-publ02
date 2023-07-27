@@ -3,10 +3,10 @@ var nmfMetaData = ['Subtype','Subtype Core','Subtype Membership','Histology','Ag
 'EGFR','Other Oncogene Alteration']
 
 var nmfMetaDataJson = {
-    "Subtype":[1,2,3,4,5],
-    "Subtype Core":['N','Y'],
+    "Subtype":[],
+    "Subtype Core":[],
     "Subtype Membership":[],
-    "Histology":['AD','MA','NC','SC','Others'],
+    "Histology":[],
     "Age":[],
     "Sex":[],
     "Smoking":[],

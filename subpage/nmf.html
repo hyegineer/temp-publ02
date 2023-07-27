@@ -7,7 +7,9 @@
                 Genes of interest (max. 10)
             </th>
             <th>
-                <input type="text" id="nmfGenesTxt" class="form-control" data-width="95%" name="nmfGenesInput"/>
+              <div class="control-group" style="width: 95%;">
+                <select id="nmfGenesOpt" data-width="95%" name="nmfGenesSelect"></select>
+              </div>
             </th>
             <th rowspan="3" style="width: 10%;">
                 <div class="btn-toolbar" style="margin:auto">
@@ -20,8 +22,13 @@
             Sort by
         </th>
         <th>
-            <select id = 'nmfSortOpt' name="nmfSortSelect" class="form-control selectpicker"
-                    data-live-search="false" data-width="95%"  multiple></select>
+          <div id="nmfSortDiv" class="dropup" style="position: relative;width: 95%;">
+            <button class="btn btn-default dropdown-toggle form-control select_multiple" style="width: 100%;margin-left: 0px;" type="button" id="nmfSortBtn" data-toggle="dropdown">
+                <span class="select_text" data-is-select="false" id="nmfSortSpan"></span>
+                <!--<span class="caret"></span>-->
+            </button>
+            <ul class="dropdown-menu dropdown_item" id = 'nmfSortOpt' name="nmfSortSelect" style="bottom: auto;width: 100%;"></ul>
+          </div>
         </th>
       </tr>
       <tr class="active">
@@ -29,8 +36,15 @@
             Column by
         </th>
         <th>
-            <select id = 'nmfColumnOpt' name="nmfColumnSelect" class="form-control selectpicker"
-                      data-live-search="false" data-width="95%"  multiple></select>
+          <div id="nmfColumnDiv" class="dropup" style="position: relative;width: 95%;">
+            <button class="btn btn-default dropdown-toggle form-control select_multiple" style="width: 100%;margin-left: 0px;" type="button" id="nmfColumnBtn" data-toggle="dropdown">
+                <span class="select_text" data-is-select="false" id="nmfColumnSpan"></span>
+                <!--<span class="caret"></span>-->
+            </button>
+            <ul class="dropdown-menu dropdown_item" id = 'nmfColumnOpt' name="nmfColumnSelect" style="bottom: auto;width: 50%;"></ul>
+
+            <ul class="dropdown-menu dropdown_item" id = 'nmfColumnSubOpt' name="nmfColumnSubSelect" style="bottom: auto;width: 50%;margin-left: 41rem;"></ul>
+          </div>  
         </th>
       </tr>
       </thead>
@@ -39,86 +53,155 @@
   <div style="height: 10px;"></div>
   <div id="heatmapDiv" style="width:95%;margin:auto" class="morpheus html-widget"> </div>
 </div>
-<script>
+<style>
+  .dropdown_item{width: 100%;overflow: scroll; overflow-x: hidden;height: 30em;}
+  .dropdown_item>li:HOVER{background-color: #eee;cursor: pointer;}
+  .dropdown_item>li {display: block;padding: 3px 10px;clear: both;line-height: 1.428571429;color: #333;white-space: nowrap;}
+  .dropdown_item>li>span{vertical-align: middle;}
+  .select_multiple {border-bottom: 0;}
+</style>
+<script type="text/javascript">
     $(function() {
 
-        for(var i=0; i<nmfMetaData.length;i++){
-            $('#nmfSortOpt').append("<option value='"+nmfMetaData[i]+"' class='dropdown'>"+nmfMetaData[i] +"</option>");
-            $('#nmfColumnOpt').append("<option value='"+nmfMetaData[i]+" class='dropdown'>"+nmfMetaData[i] +"</option>");
-        }
+      $('#nmfColumnSubOpt').addClass('hide');
 
-        $("#nmfSortOpt").selectpicker('refresh');
-        $("#nmfColumnOpt").selectpicker('refresh');
+      for(var i=0; i<nmfMetaData.length;i++){
 
-        $('.dropdown').mouseover(function () {
+        $('#nmfSortOpt').append("<li><span class='m-5'>"+nmfMetaData[i]+"</span><input type='radio' name='order"+i+"' value='ASC' checked><span class='m-3'>ASC</span>"+
+          "<input type='radio' name='order"+i+"' value='DESC'><span class='m-3'>DESC</span></li>");
 
-            $('#nmfSortSubOptDiv').removeClass('hide');
-            $("#nmfSortSubOptDiv").addClass('show');
+        $('#nmfColumnOpt').append("<li><span class='m-5'>"+nmfMetaData[i]+"</span></li>");
+      }
 
-        }).mouseout(function () { 
-            $('#nmfSortSubOptDiv').removeClass('show');
-            $('#nmfSortSubOptDiv').addClass('hide');
-        });
-
-        /*$('#nmfColumnOpt').on("change", function () {
-            var selectedValue = $('select#nmfColumnOpt option:selected').text();
-            document.getElementById("nmfColumnOpt").options.length = 0;
-
-            selectOptionChange(selectedValue);
-         
-        });*/
+      $("#nmfSortOpt").selectpicker('refresh');
+      $("#nmfColumnOpt").selectpicker('refresh');
 
       var patientsArray = []
       var uniprotIdArray = []
       var dataArray = []
-      var genSet = new Set()
-      var tmp = ["서울","부산","대구","광주","울산"]
-  
+      var geneList = []
+
       $.ajax({
         type:"GET",    
-        url:"http://127.0.0.1:5500/Quantitation_genes.csv", 
+        url:"http://127.0.0.1:8080/file/Quantitation_genes.csv", 
         data:[],   
-        dataType:"html",  
+        dataType:"text",  
         success:function(data){   
           var dataList = data.split('\n')
-          nmfData = dataList
           //Patients
           patientsArray = dataList[0].split(',').slice(1,dataList[0].split(',').length)
-          debugger;
           //UniProtID
           for(var i = 1; i<dataList.length;i++) {
             var tmp = dataList[i]
             uniprotIdArray.push(tmp.split(',')[0])
-            genSet.add(tmp.split(',')[0])
+            geneList.push({id:i,title:tmp.split(',')[0]})
             dataArray.push(tmp.split(',').slice(1, tmp.split(',').length))
           }
+
+          $('#nmfGenesOpt').selectize({
+            maxItems: 10,
+            maxOptions: 100,
+            valueField: 'id',
+            labelField: 'title',
+            searchField: 'title',
+            sortField: 'title',
+            options: geneList,
+            create: false
+           });
 
           paintHeatMap(uniprotIdArray,patientsArray,dataArray)
         }
       });
-    
-      $('#nmfGenesTxt').autocomplete({ 
-          source : tmp, 
-          select : function(event, ui) { 
-              console.log(ui.item);
-          },
-          focus : function(event, ui) { 
-              return false;
-          },
-          minLength : 1, 
-          autoFocus : true, 
-          classes : {
-              'ui-autocomplete' : 'highlight'
-          },
-          delay : 1000, 
-          disable : false, 
-          limit:10,
-          position : { my : 'right top', at : 'right bottom'}, 
-          close : function(event) { 
-              console.log(event);
+
+      var metaList = []
+
+      $.ajax({
+        type:"GET",    
+        url:"http://127.0.0.1:8080/file/nmf_meta.csv", 
+        data:[],   
+        dataType:"text",  
+        success:function(data){   
+          debugger
+          var dataList = data.split('\n')
+          for(var i=0; i<dataList.length; i++){
+            var tmp = dataList[i].substr(0,dataList[i].length-1);
+            var colValue = tmp.split(',')[0];
+            var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
+            tmpArray.push('ALL');
+            let set = new Set(tmpArray);
+            nmfMetaDataJson[colValue] = Array.from(set).sort()
           }
+        }
       });
-  
+
+      $('#nmfSortDiv ul li').click(function(event){
+          var sortTmp = $('#nmfSortSpan').html()
+          var orderVal = $('input[name="order'+$(this).index()+'"]:checked').val();
+          var sortVal = $(this).children("span").html();
+          var concatVal = sortVal + "-" + orderVal
+          if(sortTmp==''){
+            $('#nmfSortSpan').html(sortVal + "-" + orderVal);
+          } else if(sortTmp.indexOf(concatVal) >= 0){
+            $('#nmfSortSpan').html(sortTmp);
+          } else{
+            $('#nmfSortSpan').html(sortTmp+" , "+sortVal + "-" + orderVal);
+          }
+          
+      });
+
+      var columnVal = "";
+
+      $('#nmfColumnDiv ul li').mouseover(function(event){
+
+        $('#nmfColumnSubOpt li').remove();
+        $('#nmfColumnSubOpt').removeClass('hide');
+        $('#nmfColumnSubOpt').addClass('show');
+        
+        columnVal = $(this).children("span").html();
+        var tmpColSub = nmfMetaDataJson[columnVal]
+        for(var i=0;i<tmpColSub.length;i++){
+          $('#nmfColumnSubOpt').append("<li class='ulSubli'><span class='m-5'>"+tmpColSub[i]+"</span></li>");
+        }
+
+      }).click(function(event){
+
+        var columnTmp = $('#nmfColumnSpan').html();
+
+        if(columnTmp==''){
+          $('#nmfColumnSpan').html(columnVal + "-" + 'ALL');
+        } else if(columnTmp.indexOf(columnVal + "-" + "ALL") >= 0){
+            $('#nmfSortSpan').html(columnTmp);
+        } else{
+          $('#nmfColumnSpan').html(columnTmp+" , "+columnVal + "-" + "ALL");
+        }
+
+        $('#nmfColumnSubOpt li').remove();
+        $('#nmfColumnSubOpt').removeClass('show');
+        $('#nmfColumnSubOpt').addClass('hide');
+      });
+
+      
+
+      $('ul.ulSubli li').click(function(event){
+
+        debugger;
+        var columnTmp = $('#nmfColumnSpan').html();
+        var columnSubTmp = $(this).children("span").html();
+        if(columnTmp==''){
+          $('#nmfColumnSpan').html(columnVal + "-" + columnSubTmp);
+        } else if(columnTmp.indexOf(columnVal + "-" + columnSubTmp) >= 0){
+            $('#nmfSortSpan').html(columnTmp);
+        } else{
+          $('#nmfColumnSpan').html(columnTmp+" , "+columnVal + "-" + columnSubTmp);
+        }
+
+        $('#nmfColumnSubOpt li').remove();
+        $('#nmfColumnSubOpt').removeClass('show');
+        $('#nmfColumnSubOpt').addClass('hide');
+
+      });
+    
+      
       $('#selectBtn').click(function(){
   
         var subPatientsSelect = []
