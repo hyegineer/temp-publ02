@@ -3,7 +3,7 @@
     <table id="selectTable" class = "table table-bordered table-hover table-striped">
       <thead>
         <tr class="active">
-            <th style="width: 20%;">
+            <th class="th-text-align" style="width: 20%;">
                 Genes of interest (max. 10)
             </th>
             <th>
@@ -18,32 +18,30 @@
             </th>
         </tr>
       <tr class="active">
-        <th>
+        <th class="th-text-align">
             Sort by
         </th>
         <th>
           <div id="nmfSortDiv" class="dropup" style="position: relative;width: 95%;">
             <button class="btn btn-default dropdown-toggle form-control select_multiple" style="width: 100%;margin-left: 0px;" type="button" id="nmfSortBtn" data-toggle="dropdown">
                 <span class="select_text" data-is-select="false" id="nmfSortSpan"></span>
-                <!--<span class="caret"></span>-->
             </button>
             <ul class="dropdown-menu dropdown_item" id = 'nmfSortOpt' name="nmfSortSelect" style="bottom: auto;width: 100%;"></ul>
           </div>
         </th>
       </tr>
       <tr class="active">
-        <th>
+        <th class="th-text-align">
             Column by
         </th>
         <th>
           <div id="nmfColumnDiv" class="dropup" style="position: relative;width: 95%;">
-            <button class="btn btn-default dropdown-toggle form-control select_multiple" style="width: 100%;margin-left: 0px;" type="button" id="nmfColumnBtn" data-toggle="dropdown">
+            <button class="btn btn-default dropdown-toggle form-control" style="width: 100%;margin-left: 0px;" type="button" id="nmfColumnBtn" data-toggle="dropdown">
                 <span class="select_text" data-is-select="false" id="nmfColumnSpan"></span>
-                <!--<span class="caret"></span>-->
             </button>
             <ul class="dropdown-menu dropdown_item" id = 'nmfColumnOpt' name="nmfColumnSelect" style="bottom: auto;width: 50%;"></ul>
 
-            <ul class="dropdown-menu dropdown_item" id = 'nmfColumnSubOpt' name="nmfColumnSubSelect" style="bottom: auto;width: 50%;margin-left: 41rem;"></ul>
+            <ul class="dropdown-menu dropdown_item" id = 'nmfColumnSubOpt' name="nmfColumnSubSelect" style="bottom: auto;width: 50%;margin-left: 50%;"></ul>
           </div>  
         </th>
       </tr>
@@ -58,7 +56,7 @@
   .dropdown_item>li:HOVER{background-color: #eee;cursor: pointer;}
   .dropdown_item>li {display: block;padding: 3px 10px;clear: both;line-height: 1.428571429;color: #333;white-space: nowrap;}
   .dropdown_item>li>span{vertical-align: middle;}
-  .select_multiple {border-bottom: 0;}
+  .select_text{text-align: left;}
 </style>
 <script type="text/javascript">
     $(function() {
@@ -73,20 +71,45 @@
         $('#nmfColumnOpt').append("<li><span class='m-5'>"+nmfMetaData[i]+"</span></li>");
       }
 
-      $("#nmfSortOpt").selectpicker('refresh');
-      $("#nmfColumnOpt").selectpicker('refresh');
-
       var patientsArray = []
       var uniprotIdArray = []
       var dataArray = []
       var geneList = []
+      var metaList = []
+      var metaRevert = []
 
       $.ajax({
         type:"GET",    
-        url:"http://127.0.0.1:8080/file/Quantitation_genes.csv", 
+        url: baseURL+"file/nmf_meta.csv", 
         data:[],   
         dataType:"text",  
         success:function(data){   
+          //debugger
+          var dataList = data.split('\n')
+          for(var i=0; i<dataList.length; i++){
+            var tmp = dataList[i].substr(0,dataList[i].length-1);
+            var colValue = tmp.split(',')[0];
+            var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
+            metaList.push({
+              'name':colValue,
+              'array':tmpArray
+            })
+            let set = new Set(tmpArray);
+            nmfMetaDataJson[colValue] = Array.from(set).sort()
+          }
+
+          nmfMetaObj['vectors'] = metaList
+        }
+      });
+
+
+      $.ajax({
+        type:"GET",    
+        url: baseURL+"file/Quantitation_genes.csv", 
+        data:[],   
+        dataType:"text",  
+        success:function(data){   
+          //debugger
           var dataList = data.split('\n')
           //Patients
           patientsArray = dataList[0].split(',').slice(1,dataList[0].split(',').length)
@@ -94,9 +117,13 @@
           for(var i = 1; i<dataList.length;i++) {
             var tmp = dataList[i]
             uniprotIdArray.push(tmp.split(',')[0])
-            geneList.push({id:i,title:tmp.split(',')[0]})
             dataArray.push(tmp.split(',').slice(1, tmp.split(',').length))
           }
+
+          var geneTmp = Array.from(new Set(uniprotIdArray)).sort();
+          $.each(geneTmp,function(n,value) { 
+            geneList.push({id:value,title:value})
+          });
 
           $('#nmfGenesOpt').selectize({
             maxItems: 10,
@@ -109,49 +136,67 @@
             create: false
            });
 
-          paintHeatMap(uniprotIdArray,patientsArray,dataArray)
+          paintHeatMap(uniprotIdArray,patientsArray,dataArray,nmfMetaObj)
         }
       });
 
-      var metaList = []
 
       $.ajax({
         type:"GET",    
-        url:"http://127.0.0.1:8080/file/nmf_meta.csv", 
+        url: baseURL+"file/nmf_MetaRevert.csv", 
         data:[],   
         dataType:"text",  
         success:function(data){   
-          debugger
+          //debugger
           var dataList = data.split('\n')
-          for(var i=0; i<dataList.length; i++){
+          for(var i=1; i<dataList.length; i++){
             var tmp = dataList[i].substr(0,dataList[i].length-1);
-            var colValue = tmp.split(',')[0];
-            var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
-            tmpArray.push('ALL');
-            let set = new Set(tmpArray);
-            nmfMetaDataJson[colValue] = Array.from(set).sort()
+            metaRevert.push(tmp.split(','))
           }
         }
       });
 
+
       $('#nmfSortDiv ul li').click(function(event){
-          var sortTmp = $('#nmfSortSpan').html()
-          var orderVal = $('input[name="order'+$(this).index()+'"]:checked').val();
-          var sortVal = $(this).children("span").html();
-          var concatVal = sortVal + "-" + orderVal
-          if(sortTmp==''){
-            $('#nmfSortSpan').html(sortVal + "-" + orderVal);
-          } else if(sortTmp.indexOf(concatVal) >= 0){
-            $('#nmfSortSpan').html(sortTmp);
-          } else{
-            $('#nmfSortSpan').html(sortTmp+" , "+sortVal + "-" + orderVal);
-          }
+
+        debugger
+
+        var sortTmp = $('#nmfSortSpan').html()
+        var orderVal = $('input[name="order'+$(this).index()+'"]:checked').val();
+        var sortVal = $(this).children("span").html();
+
+        if(sortTmp==''){
+          $('#nmfSortSpan').html(sortVal + "-" + orderVal);
+
+        } else if(sortTmp.indexOf(sortVal+"-") >= 0){
+          var sa = sortTmp.split(",");
+          var index=-1;
+          $.each(sa,function(n,v){
+            if(v.indexOf(sortVal+"-") >= 0){
+              index = n
+            }
+          });
+          sa.splice(index,1)
+          sortTmp = sa.toString() + ","+sortVal + "-" + orderVal
+          $('#nmfSortSpan').html(sortTmp);
+
+        } else {
+          $('#nmfSortSpan').html(sortTmp+","+sortVal + "-" + orderVal);
+        }
+
+        $('#nmfSortOpt').removeClass('show');
+        $('#nmfSortOpt').addClass('hide');
           
       });
 
+      $('#nmfSortBtn').click(function(){
+        $('#nmfSortOpt').removeClass('hide');
+        $('#nmfSortOpt').addClass('show');
+      })
+
       var columnVal = "";
 
-      $('#nmfColumnDiv ul li').mouseover(function(event){
+      $('#nmfColumnOpt li').mouseover(function(event){
 
         $('#nmfColumnSubOpt li').remove();
         $('#nmfColumnSubOpt').removeClass('hide');
@@ -160,7 +205,7 @@
         columnVal = $(this).children("span").html();
         var tmpColSub = nmfMetaDataJson[columnVal]
         for(var i=0;i<tmpColSub.length;i++){
-          $('#nmfColumnSubOpt').append("<li class='ulSubli'><span class='m-5'>"+tmpColSub[i]+"</span></li>");
+          $('#nmfColumnSubOpt').append("<li><span class='m-5'>"+tmpColSub[i]+"</span></li>");
         }
 
       }).click(function(event){
@@ -169,10 +214,21 @@
 
         if(columnTmp==''){
           $('#nmfColumnSpan').html(columnVal + "-" + 'ALL');
-        } else if(columnTmp.indexOf(columnVal + "-" + "ALL") >= 0){
-            $('#nmfSortSpan').html(columnTmp);
+
+        } else if(columnTmp.indexOf(columnVal+"-") >= 0){
+
+          var ca = columnTmp.split(",");
+          var index=-1;
+          $.each(ca,function(n,v){
+            if(v.indexOf(columnVal+"-") >= 0){
+              index = n
+            }
+          })
+          ca.splice(index,1)
+          columnTmp = ca.toString() + ","+columnVal + "-" + 'ALL'
+          $('#nmfColumnSpan').html(columnTmp);
         } else{
-          $('#nmfColumnSpan').html(columnTmp+" , "+columnVal + "-" + "ALL");
+          $('#nmfColumnSpan').html(columnTmp+","+columnVal + "-" + "ALL");
         }
 
         $('#nmfColumnSubOpt li').remove();
@@ -180,52 +236,98 @@
         $('#nmfColumnSubOpt').addClass('hide');
       });
 
-      
 
-      $('ul.ulSubli li').click(function(event){
-
-        debugger;
+      $(document).on('click','#nmfColumnSubOpt li',function(){
+        
         var columnTmp = $('#nmfColumnSpan').html();
         var columnSubTmp = $(this).children("span").html();
         if(columnTmp==''){
           $('#nmfColumnSpan').html(columnVal + "-" + columnSubTmp);
-        } else if(columnTmp.indexOf(columnVal + "-" + columnSubTmp) >= 0){
-            $('#nmfSortSpan').html(columnTmp);
+        } else if(columnTmp.indexOf(columnVal+"-") >= 0){
+          var ca = columnTmp.split(",");
+          var index=-1;
+          $.each(ca,function(n,v){
+            if(v.indexOf(columnVal+"-") >= 0){
+              index = n
+            }
+          })
+          ca.splice(index,1)
+          columnTmp = ca.toString() + ","+columnVal + "-" + columnSubTmp
+          $('#nmfColumnSpan').html(columnTmp);
         } else{
-          $('#nmfColumnSpan').html(columnTmp+" , "+columnVal + "-" + columnSubTmp);
+          $('#nmfColumnSpan').html(columnTmp+","+columnVal + "-" + columnSubTmp);
         }
 
         $('#nmfColumnSubOpt li').remove();
         $('#nmfColumnSubOpt').removeClass('show');
         $('#nmfColumnSubOpt').addClass('hide');
-
       });
     
       
       $('#selectBtn').click(function(){
-  
-        var subPatientsSelect = []
-        var subPatientsArray = []
-        var subUniProtIdSelect = []
-        var subUniProtIdArray = []
+        debugger
+
+        var subGeneArray = []
+        var subGeneSelect =[]
+        var subColumnSelect = []
         var subDataArray=[]
+        let subColumnSet = new Set()
+        var subnmfMetaData = {
+          "vectors" :[]
+        }
+
+        $("#nmfGenesOpt option:selected").each(function () {
+          subGeneArray.push($(this).val())
+        });
+
+        var subSortArray = $('#nmfSortSpan').html().split(",")
+        var subColumnArray = $('#nmfColumnSpan').html().split(",")
+
+        if(subGeneArray != null && subGeneArray.length > 0){
+          $.each(subGeneArray,function(n,v){
+            for(var i = 1; i<uniprotIdArray.length;i++) {
+              var tmp = uniprotIdArray[i]
+              if(tmp==v){
+                subGeneSelect.push(i)
+              }
+            }
+          })
+        }
+        
+        var colTmpList = []
+        if(subColumnArray!=null && subColumnArray.length > 0){
+          $.each(subColumnArray,function(n,v){
+            var tmp = v.split('-');
+            if(tmp[1] != 'ALL'){
+              var colIndex = nmfMetaOrder[tmp[0]]
+              for(var i =0;i<metaRevert.length;i++){
+                if(metaRevert[i][colIndex] == tmp[1]){
+                  colTmpList.push(metaRevert[i]);
+                }
+
+              }
+            } else{
+              colTmpList = metaRevert
+            }
+          });
+        }
+
+        if(subSortArray !=null && subSortArray.length > 0){
+          $.each(subSortArray,function(n,v){
+            var tmp = v.split('-');
+            var colTmp =  nmfMetaDataALLObj[tmp[0]];
+            for(var i =0;i<subColumnSet.length;i++){
+              subColList.push([i,colTmp[i]])
+            }
+            
+          });
+        }
   
-        $("#patientsOpt option:selected").each(function () {
-          var tmp = $(this).val()
-          subPatientsSelect.push(tmp.split('_')[0])
-          subPatientsArray.push(tmp.split('_')[1])
-        })
-  
-        $("#uniProtIdOpt option:selected").each(function () {
-          var tmp = $(this).val()
-          subUniProtIdSelect.push(tmp.split('_')[0])
-          subUniProtIdArray.push(tmp.split('_')[1])
-        })
-        for(var i = 0; i<subUniProtIdSelect.length;i++){
-          var rowIdx = subUniProtIdSelect[i]
+        for(var i = 0; i<subGeneSelect.length;i++){
+          var rowIdx = subGeneSelect[i]
           var tmpArray = []
-          for(var j = 0; j<subPatientsSelect.length;j++){
-            var columnIdx = subPatientsSelect[j]
+          for(var j = 0; j<subColumnSelect.length;j++){
+            var columnIdx = subColumnSelect[j]
             tmpArray.push(dataArray[rowIdx][columnIdx])
           }
           subDataArray.push(tmpArray)
@@ -233,11 +335,11 @@
   
         $('#heatmapDiv').empty()
   
-        paintHeatMap(subUniProtIdArray,subPatientsArray,subDataArray)
+        paintHeatMap(subGeneSelect,subColumnSelect,subDataArray,subnmfMetaData)
       });
-  
-  
-      function paintHeatMap(uniprotIdArray,patientsArray,dataArray){
+
+
+      function paintHeatMap(uniprotIdArray,patientsArray,dataArray,nmfMetaData){
   
         var json = {
           "rows": uniprotIdArray.length,
@@ -251,12 +353,7 @@
               "array": uniprotIdArray
             }]
           },
-          "columnMetadataModel": {
-            "vectors": [{
-              "name": "Sample.ID",
-              "array": patientsArray
-            }]
-          }
+          "columnMetadataModel": nmfMetaData
         }
   
         new morpheus.HeatMap({
