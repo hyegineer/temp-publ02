@@ -13,7 +13,7 @@
             </th>
             <th rowspan="3" style="width: 10%;">
                 <div class="btn-toolbar" style="margin:auto">
-                    <input type="button" id="selectBtn" class="btn btn-default" value="Apply" style="width:150px;height:150px"/>
+                    <input type="button" id="selectBtn" class="btn btn-primary" value="Apply" style="width:150px;height:150px"/>
                 </div>
             </th>
         </tr>
@@ -22,12 +22,14 @@
             Sort by
         </th>
         <th>
-          <div id="nmfSortDiv" class="dropup" style="position: relative;width: 95%;">
-            <button class="btn btn-default dropdown-toggle form-control select_multiple" style="width: 100%;margin-left: 0px;" type="button" id="nmfSortBtn" data-toggle="dropdown">
+          <div id="nmfSortDiv" class="dropup" style="position: relative;width:100%;">
+            <button class="btn btn-default dropdown-toggle form-control select_multiple" style="width: 88%;margin-left: 0px;" type="button" id="nmfSortBtn" data-toggle="dropdown">
                 <span class="select_text" data-is-select="false" id="nmfSortSpan"></span>
             </button>
-            <ul class="dropdown-menu dropdown_item" id = 'nmfSortOpt' name="nmfSortSelect" style="bottom: auto;width: 100%;"></ul>
+            <ul class="dropdown-menu dropdown_item" id = 'nmfSortOpt' name="nmfSortSelect" style="bottom: auto;width: 100%;"></ul>   
+            <button class="btn btn-primary" id="nmfSortDelBtn" style="width: 10%;margin-left: 1%;">Delete</button> 
           </div>
+          
         </th>
       </tr>
       <tr class="active">
@@ -35,13 +37,14 @@
             Column by
         </th>
         <th>
-          <div id="nmfColumnDiv" class="dropup" style="position: relative;width: 95%;">
-            <button class="btn btn-default dropdown-toggle form-control" style="width: 100%;margin-left: 0px;" type="button" id="nmfColumnBtn" data-toggle="dropdown">
+          <div id="nmfColumnDiv" class="dropup" style="position: relative;width: 100%;">
+            <button class="btn btn-default dropdown-toggle form-control" style="width: 88%;margin-left: 0px;" type="button" id="nmfColumnBtn" data-toggle="dropdown">
                 <span class="select_text" data-is-select="false" id="nmfColumnSpan"></span>
             </button>
             <ul class="dropdown-menu dropdown_item" id = 'nmfColumnOpt' name="nmfColumnSelect" style="bottom: auto;width: 50%;"></ul>
 
             <ul class="dropdown-menu dropdown_item" id = 'nmfColumnSubOpt' name="nmfColumnSubSelect" style="bottom: auto;width: 50%;margin-left: 50%;"></ul>
+            <button class="btn btn-primary" id="nmfColumnDelBtn" style="width: 10%;margin-left: 1%;">Delete</button>
           </div>  
         </th>
       </tr>
@@ -56,12 +59,13 @@
   .dropdown_item>li:HOVER{background-color: #eee;cursor: pointer;}
   .dropdown_item>li {display: block;padding: 3px 10px;clear: both;line-height: 1.428571429;color: #333;white-space: nowrap;}
   .dropdown_item>li>span{vertical-align: middle;}
-  .select_text{text-align: left;}
+  .select_text{float: left;}
 </style>
 <script type="text/javascript">
     $(function() {
 
       $('#nmfColumnSubOpt').addClass('hide');
+      $('.select_text').html('');
 
       for(var i=0; i<nmfMetaData.length;i++){
 
@@ -75,39 +79,15 @@
       var uniprotIdArray = []
       var dataArray = []
       var geneList = []
-      var metaList = []
       var metaRevert = []
-
-      $.ajax({
-        type:"GET",    
-        url: baseURL+"file/nmf_meta.csv", 
-        data:[],   
-        dataType:"text",  
-        success:function(data){   
-          //debugger
-          var dataList = data.split('\n')
-          for(var i=0; i<dataList.length; i++){
-            var tmp = dataList[i].substr(0,dataList[i].length-1);
-            var colValue = tmp.split(',')[0];
-            var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
-            metaList.push({
-              'name':colValue,
-              'array':tmpArray
-            })
-            let set = new Set(tmpArray);
-            nmfMetaDataJson[colValue] = Array.from(set).sort()
-          }
-
-          nmfMetaObj['vectors'] = metaList
-        }
-      });
-
+      var metaArray = []
 
       $.ajax({
         type:"GET",    
         url: baseURL+"file/Quantitation_genes.csv", 
         data:[],   
-        dataType:"text",  
+        dataType:"text", 
+        cache:false, 
         success:function(data){   
           //debugger
           var dataList = data.split('\n')
@@ -136,16 +116,31 @@
             create: false
            });
 
-          paintHeatMap(uniprotIdArray,patientsArray,dataArray,nmfMetaObj)
+           paintHeatMap(uniprotIdArray,patientsArray,dataArray,nmfMetaObj)
         }
       });
 
 
       $.ajax({
         type:"GET",    
+        url: baseURL+"file/nmf_meta.csv", 
+        data:[],   
+        dataType:"text",  
+        cache:false,
+        success:function(data){   
+          //debugger
+          var dataList = data.split('\n')
+          metaArray = dataList
+        }
+      });
+
+      
+      $.ajax({
+        type:"GET",    
         url: baseURL+"file/nmf_MetaRevert.csv", 
         data:[],   
         dataType:"text",  
+        cache:false,
         success:function(data){   
           //debugger
           var dataList = data.split('\n')
@@ -157,9 +152,24 @@
       });
 
 
-      $('#nmfSortDiv ul li').click(function(event){
-
+      $('.select_text').on('backspace', function() {
         debugger
+        $(this).val()
+      });
+
+      $('#heatmapDiv').on('click',function(e){
+        if ($(e.target).closest('#nmfColumnSubOpt').length <=0) {
+          $('#nmfColumnSubOpt').removeClass('show');
+          $('#nmfColumnSubOpt').addClass('hide');
+        }
+
+        if ($(e.target).closest('#nmfSortOpt').length <=0) {
+          $('#nmfSortOpt').removeClass('show');
+          $('#nmfSortOpt').addClass('hide');
+        }
+      })
+
+      $('#nmfSortDiv ul li').click(function(event){
 
         var sortTmp = $('#nmfSortSpan').html()
         var orderVal = $('input[name="order'+$(this).index()+'"]:checked').val();
@@ -177,7 +187,12 @@
             }
           });
           sa.splice(index,1)
-          sortTmp = sa.toString() + ","+sortVal + "-" + orderVal
+          if(sa == "" || sa ==null){
+            sortTmp = sortVal + "-" + orderVal
+          } else{
+            sortTmp = sa.toString() + ","+sortVal + "-" + orderVal
+          }
+          
           $('#nmfSortSpan').html(sortTmp);
 
         } else {
@@ -193,6 +208,16 @@
         $('#nmfSortOpt').removeClass('hide');
         $('#nmfSortOpt').addClass('show');
       })
+
+      $('#nmfSortDelBtn').click(function(){
+
+        var sortTmp = $('#nmfSortSpan').html();
+        if(sortTmp!=null && sortTmp.length>0){
+          var sortListTmp = sortTmp.split(",")
+          sortListTmp.pop()
+          $('#nmfSortSpan').html(sortListTmp.join(','));
+        }
+      });
 
       var columnVal = "";
 
@@ -225,7 +250,11 @@
             }
           })
           ca.splice(index,1)
-          columnTmp = ca.toString() + ","+columnVal + "-" + 'ALL'
+          if(ca == "" || ca ==null){
+            columnTmp = columnVal + "-" + 'ALL'
+          } else{
+            columnTmp = ca.toString() + ","+columnVal + "-" + 'ALL'
+          }
           $('#nmfColumnSpan').html(columnTmp);
         } else{
           $('#nmfColumnSpan').html(columnTmp+","+columnVal + "-" + "ALL");
@@ -252,7 +281,11 @@
             }
           })
           ca.splice(index,1)
-          columnTmp = ca.toString() + ","+columnVal + "-" + columnSubTmp
+          if(ca == "" || ca ==null){
+            columnTmp = columnVal + "-" + columnSubTmp
+          } else{
+            columnTmp = ca.toString() + ","+columnVal + "-" + columnSubTmp
+          }
           $('#nmfColumnSpan').html(columnTmp);
         } else{
           $('#nmfColumnSpan').html(columnTmp+","+columnVal + "-" + columnSubTmp);
@@ -262,85 +295,213 @@
         $('#nmfColumnSubOpt').removeClass('show');
         $('#nmfColumnSubOpt').addClass('hide');
       });
+
+      $('#nmfColumnDelBtn').click(function(){
+
+        var columnTmp = $('#nmfColumnSpan').html();
+        if(columnTmp!=null && columnTmp.length>0){
+          var columnListTmp = columnTmp.split(",")
+          columnListTmp.pop()
+          $('#nmfColumnSpan').html(columnListTmp.join(','));
+        }
+      });
     
       
       $('#selectBtn').click(function(){
-        debugger
 
         var subGeneArray = []
         var subGeneSelect =[]
-        var subColumnSelect = []
+        var subUniprotIdArray = []
+
+        var subSampleSelect = []
+        var subPatientsArray = []
+        var subSapmleArray = []
+
         var subDataArray=[]
-        let subColumnSet = new Set()
+
         var subnmfMetaData = {
           "vectors" :[]
         }
 
         $("#nmfGenesOpt option:selected").each(function () {
-          subGeneArray.push($(this).val())
+          subGeneSelect.push($(this).val())
         });
 
-        var subSortArray = $('#nmfSortSpan').html().split(",")
-        var subColumnArray = $('#nmfColumnSpan').html().split(",")
-
-        if(subGeneArray != null && subGeneArray.length > 0){
-          $.each(subGeneArray,function(n,v){
-            for(var i = 1; i<uniprotIdArray.length;i++) {
+        if(subGeneSelect != null && subGeneSelect.length > 0){
+          $.each(subGeneSelect,function(n,v){
+            for(var i = 0; i<uniprotIdArray.length;i++) {
               var tmp = uniprotIdArray[i]
               if(tmp==v){
-                subGeneSelect.push(i)
+                subUniprotIdArray.push(tmp)
+                subGeneArray.push(i)
               }
             }
           })
+        } else{
+          subUniprotIdArray = uniprotIdArray
+          for(var i = 0; i<uniprotIdArray.length;i++) {
+                subGeneArray.push(i)
+          }
         }
-        
-        var colTmpList = []
-        if(subColumnArray!=null && subColumnArray.length > 0){
-          $.each(subColumnArray,function(n,v){
+
+        var subSampleSelect = $('#nmfColumnSpan').html().split(",")
+        var colListTmp = []
+        if(subSampleSelect!=null && subSampleSelect.length > 0){
+          $.each(subSampleSelect,function(n,v){
             var tmp = v.split('-');
             if(tmp[1] != 'ALL'){
               var colIndex = nmfMetaOrder[tmp[0]]
               for(var i =0;i<metaRevert.length;i++){
                 if(metaRevert[i][colIndex] == tmp[1]){
-                  colTmpList.push(metaRevert[i]);
+                  colListTmp.push(metaRevert[i]);
                 }
-
               }
             } else{
-              colTmpList = metaRevert
+              colListTmp = metaRevert
             }
           });
         }
 
+        var selColTmp = []
+        if(colListTmp!=null && colListTmp.length>0){
+          for(var i = 0; i <colListTmp.length;i++){
+            for(var j=0;j<patientsArray.length;j++){
+              if(colListTmp[i][0]==patientsArray[j]){
+                selColTmp.push(colListTmp[i])
+              }
+           }
+          }
+        }
+        
+        var subSortArray = $('#nmfSortSpan').html().split(",")
+
+        var sortTmpArray = []
         if(subSortArray !=null && subSortArray.length > 0){
           $.each(subSortArray,function(n,v){
-            var tmp = v.split('-');
-            var colTmp =  nmfMetaDataALLObj[tmp[0]];
-            for(var i =0;i<subColumnSet.length;i++){
-              subColList.push([i,colTmp[i]])
-            }
-            
+            var tmps = v.split('-');
+            for(var i = 0 ;i<nmfMetaObj['vectors'].length;i++){
+              if(nmfMetaObj['vectors'][i].name == tmps[0]){
+                sortTmpArray.push([i,tmps[1]]);
+              }
+            } 
           });
         }
-  
-        for(var i = 0; i<subGeneSelect.length;i++){
-          var rowIdx = subGeneSelect[i]
+
+        var subGenes = []
+        for(var i =0;i<sortTmpArray.length;i++){
+          if(sortTmpArray[i][1] == 'ASC'){
+            subGenes.push(((a, b) => a[i]- b[i]))
+          } else{
+            subGenes.push(((a, b) => b[i]-a[i]))
+          }
+        }
+
+        var subColumnSelect = []
+        if(subGenes!=null && subGenes.length>0){
+          subColumnSelect = multiSort(selColTmp, subGenes)
+        }
+
+        if(subColumnSelect!=null && subColumnSelect.length>0){
+          for(var i=0;i<subColumnSelect.length;i++){
+            subPatientsArray.push(subColumnSelect[i][0])
+          }
+          for(var i = 0; i<subPatientsArray.length;i++){
+            for(var j=0;j<patientsArray.length;j++){
+              if(subPatientsArray[i]==patientsArray[j]){
+                subSapmleArray.push(j)
+              }
+            }
+          }
+        } else{
+          subPatientsArray = patientsArray
+          for(var j=0;j<patientsArray.length;j++){
+              subSapmleArray.push(j)
+          }
+        }
+        
+        for(var i = 0; i<subGeneArray.length;i++){
+          var rowIdx = subGeneArray[i]
           var tmpArray = []
-          for(var j = 0; j<subColumnSelect.length;j++){
-            var columnIdx = subColumnSelect[j]
+          for(var j = 0; j<subSapmleArray.length;j++){
+            var columnIdx = subSapmleArray[j]
             tmpArray.push(dataArray[rowIdx][columnIdx])
           }
           subDataArray.push(tmpArray)
         }
+
+       /* var metaList = []
+        for(var i=0; i<metaArray.length; i++){
+            var tmp = metaArray[i].substr(0,metaArray[i].length-1);
+            var colValue = tmp.split(',')[0];
+            var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
+            var subTmpArray = []
+            if(subSapmleArray !=null && subSapmleArray.length>0){
+              for(var j=0;j<subSapmleArray.length;j++){
+                  subTmpArray.push(tmpArray[subSapmleArray[j]])                
+            }
+            
+            metaList.push({
+              'name':colValue,
+              'array':subTmpArray
+            })
+          }
+        } 
+
+          subnmfMetaData['vectors'] = metaList*/
   
-        $('#heatmapDiv').empty()
+          
   
-        paintHeatMap(subGeneSelect,subColumnSelect,subDataArray,subnmfMetaData)
+          paintHeatMap(subUniprotIdArray,subPatientsArray,subDataArray,subnmfMetaData)
       });
 
+      function multiSort(array, ...compairers){
+
+        return array.sort((a, b) => {
+          for (const c of compairers) {
+          const r = c[0](a, b)
+          if (r !== 0) {
+                return r
+              }
+          }
+        })
+      }
 
       function paintHeatMap(uniprotIdArray,patientsArray,dataArray,nmfMetaData){
-  
+        debugger;
+
+        var patientTmp = []
+
+        for(var i=0; i<metaArray.length; i++){
+          var tmp = metaArray[i].substr(0,metaArray[i].length-1);
+          var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
+          
+          for(var j=0; j<patientsArray.length;j++){
+            if(tmpArray.indexOf(patientsArray[j])>-1){
+              patientTmp.push(tmpArray.indexOf(patientsArray[j]))
+            }
+          }
+        }
+
+        var metaList = []
+        for(var i=0; i<metaArray.length; i++){
+          var tmp = metaArray[i].substr(0,metaArray[i].length-1);
+          var colValue = tmp.split(',')[0];
+          var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
+          var putArray =[];
+          for(var j=0;j<patientTmp.length;j++){
+            putArray.push(tmpArray[patientTmp[j]]);
+          }
+          metaList.push({
+                'name':colValue,
+                'array':putArray
+          })
+          let set = new Set(tmpArray);
+          nmfMetaDataJson[colValue] = Array.from(set).sort()
+        }
+
+        nmfMetaObj['vectors'] = metaList
+
+        $('#heatmapDiv').empty();
         var json = {
           "rows": uniprotIdArray.length,
           "columns": patientsArray.length,
@@ -353,7 +514,7 @@
               "array": uniprotIdArray
             }]
           },
-          "columnMetadataModel": nmfMetaData
+          "columnMetadataModel": nmfMetaObj
         }
   
         new morpheus.HeatMap({
