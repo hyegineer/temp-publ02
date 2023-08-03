@@ -46,7 +46,6 @@ var nmfMetaDataJson = {
     "Other Oncogene Alteration":[]
 }
 
-
 var nmfMetaObj = {
     "vectors" :[]
-}
+  }
