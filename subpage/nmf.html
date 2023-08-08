@@ -376,6 +376,8 @@
         var subColumnSelect = []
         if(subGenes!=null && subGenes.length>0){
           subColumnSelect = multiSort(selColTmp, subGenes)
+        }else{
+          subColumnSelect = selColTmp
         }
 
         if(subColumnSelect!=null && subColumnSelect.length>0){

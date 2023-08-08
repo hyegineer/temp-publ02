@@ -1,6 +1,6 @@
 var baseURL = "http://127.0.0.1:5500/";
 
-var nmfMetaData = ['Subtype','Subtype Core','Subtype Membership','Histology','Age','Sex','Smoking','TNM stage','Pathologic-N',
+var nmfMetaData = ['Subtype','Subtype Core','Histology','Sex','Smoking','TNM stage','Pathologic-N',
 'Adjuvant Treatment','Recurrence Status','TIL pattern','Immune Cluster','Whole Genome Doubling','TP53','Other Tumor Suppressor genes',
 'EGFR','Other Oncogene Alteration']
 
