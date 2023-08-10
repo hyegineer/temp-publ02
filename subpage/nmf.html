@@ -1,4 +1,7 @@
 <div id="nmfContent">
+<div class="layerPopup">
+  <div class="spinner"></div>
+</div>
 <div id = "select_menu" style="width:90%;height:170px;margin:auto">
     <table id="selectTable" class = "table table-bordered table-hover table-striped">
       <thead>
@@ -101,6 +104,8 @@ var metaArray = []
 
   $(function() {
 
+    showSpinner()
+
     $('#nmfColumnSubOpt').addClass('hide');
 
     for(var i=0; i<nmfMetaSortData.length;i++){
@@ -163,7 +168,7 @@ var metaArray = []
 
     $.ajax({
       type:"GET",    
-      url: baseURL+"file/nmf_meta.csv", 
+      url: baseURL+"file/NMF_meta.csv", 
       data:[],   
       dataType:"text",  
       cache:false,
@@ -190,6 +195,7 @@ var metaArray = []
         }
       }
     });
+
 
     $('#heatmapDiv').on('click',function(e){
       if ($(e.target).closest('#nmfColumnSubOpt').length <=0) {
@@ -646,6 +652,8 @@ var metaArray = []
           //params: {cluster: 'Rows and columns'}
         }]
       });
+
+      hideSpinner()
     }
 
 </script>
