@@ -2,7 +2,7 @@
 <div class="layerPopup">
   <div class="spinner"></div>
 </div>
-<div id = "select_menu" style="width:90%;height:170px;margin:auto">
+<div id = "select_menu" style="width:29%;height:90%;margin:auto;float:left;">
     <table id="selectTable" class = "table table-bordered table-hover table-striped">
       <thead>
         <tr class="active">
@@ -17,7 +17,7 @@
             </th>
             <th rowspan="3" style="width: 10%;">
                 <div class="btn-toolbar" style="margin:auto">
-                    <input type="button" id="selectBtn" class="btn btn-primary" value="Apply" style="width:150px;height:150px"/>
+                    <input type="button" id="selectBtn" class="btn btn-primary" value="Apply" style="width:100px;height:100px;margin-bottom: 40%;"/>
                 </div>
             </th>
         </tr>
@@ -53,8 +53,8 @@
       </thead>
     </table>
   </div>
-  <div style="height: 10px;"></div>
-  <div id="heatmapDiv" style="width:95%;margin:auto" class="morpheus html-widget"> </div>
+  <!--<div style="height: 10px;"></div>-->
+  <div id="heatmapDiv" style="width:70%;margin:auto;float:right;height:90%" class="morpheus html-widget"> </div>
 </div>
 <style>
   .dropdown_item{width: 100%;overflow: scroll; overflow-x: hidden;height: 30em;}
@@ -634,16 +634,13 @@ var metaArray = []
         colorScheme: { // optional color scheme. default is relative
           type: 'fixed',
           map: [{
-              value: 100,
-              color: '#009000'
-            },{
-            value: 500,
+            value: 2000,
             color: '#0000ff'
           }, {
-            value: 0,
+            value: 1000,
             color: '#ffffff'
           }, {
-            value: 1000,
+            value: 0,
             color: '#ff0000'
           }]
         },
