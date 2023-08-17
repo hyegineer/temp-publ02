@@ -54,3 +54,11 @@ var nmfMetaDataJson = {
 var nmfMetaObj = {
     "vectors" :[]
   }
+
+
+var nmfData = []
+var acetylData = []
+var genesData = []
+var phosphoData = []
+var proteinData = []
+var metaArray = []

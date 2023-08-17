@@ -53,21 +53,21 @@
             <div class="collapse navbar-collapse" id="mymeun">
                 <ul class="nav navbar-nav">
                     <li name="NMF"><a href="#">NMF Cluster</a></li> 
-                    <li><a href="#">Immune Cluster</a></li>                
+                    <li name="IMMUNE"><a href="#">Immune Cluster</a></li>                
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Quantitation</a>
                         <ul class="dropdown-menu">
-                          <li><a href="#">Protein</a></li>
+                          <li name="PROTEIN"><a href="#">Protein</a></li>
                           <li role="separator" class="divider"></li>
-                          <li><a href="#">Phosphosite</a></li>
+                          <li name="PHOSPHO"><a href="#">Phosphosite</a></li>
                           <li role="separator" class="divider"></li>
-                          <li><a href="#">Acetylsite</a></li>
+                          <li name="ACETYL"><a href="#">Acetylsite</a></li>
                           <li role="separator" class="divider"></li>
-                          <li><a href="#">RNA</a></li>
+                          <li name="RNA"><a href="#">RNA</a></li>
                         </ul>
                       </li>
-                    <li><a href="#" >Group comparison</a></li>
-                    <li><a href="#" >Survival analysis</a></li>
+                    <li name="COMPARISON"><a href="#" >Group comparison</a></li>
+                    <li name="SURVIVAL"><a href="#" >Survival analysis</a></li>
                 </ul>
                <!--  <ul class="nav navbar-nav navbar-right">
                     <li> <a href="#">Sign in</a> </li>
@@ -84,13 +84,19 @@
            
         </div>
     </div>
+    <div class="layerPopup">
+        <div class="spinner"></div>
+    </div>
     <div id="mainContent"></div>
 </body>
 <style type="text/css">
    
 </style>
 <script>
+    showSpinner();
+
     $(function() {
+
         function dropdownOpen() {      
             $('.dropdown').mouseover(function () {
                 $(this).addClass('show');
@@ -109,32 +115,100 @@
                 case 'NMF':
                     $('#mainContent').load('/subpage/nmf.html')
                 break;
-                case 'NMF':
+                case 'IMMUNE':
+                    $('#mainContent').load('/subpage/immune.html')
+                break;
+                case 'PROTEIN':
                     $('#mainContent').load('/subpage/nmf.html')
                 break;
-                case 'NMF':
+                case 'PHOSPHO':
                     $('#mainContent').load('/subpage/nmf.html')
                 break;
-                case 'NMF':
+                case 'ACETYL':
                     $('#mainContent').load('/subpage/nmf.html')
                 break;
-                case 'NMF':
+                case 'RNA':
                     $('#mainContent').load('/subpage/nmf.html')
                 break;
-                case 'NMF':
-                    $('#mainContent').load('/subpage/nmf.html')
+                case 'COMPARISON':
+                    $('#mainContent').load('/subpage/comparison.html')
                 break;
-                case 'NMF':
-                    $('#mainContent').load('/subpage/nmf.html')
-                break;
-                case 'NMF':
-                    $('#mainContent').load('/subpage/nmf.html')
+                case 'SURVIVAL':
+                    $('#mainContent').load('/subpage/survival.html')
                 break;
             }
             
         });
 
+        $.ajax({
+            type:"GET",    
+            url: baseURL+"file/Quantitation_genes.csv", 
+            data:[],   
+            dataType:"text", 
+            cache:false, 
+            success:function(data){   
+              
+              nmfData = data.split('\n');
+              
+            }
+        });
 
+
+        $.ajax({
+            type:"GET",    
+            url: baseURL+"file/Quantitation_acetyl.csv", 
+            data:[],   
+            dataType:"text", 
+            cache:false, 
+            success:function(data){   
+              
+              acetylData = data.split('\n');
+              
+            }
+        });
+
+
+        $.ajax({
+            type:"GET",    
+            url: baseURL+"file/Quantitation_phospho.csv", 
+            data:[],   
+            dataType:"text", 
+            cache:false, 
+            success:function(data){   
+              
+              phosphoData = data.split('\n');
+              
+            }
+        });
+
+
+        $.ajax({
+            type:"GET",    
+            url: baseURL+"file/Quantitation_proteins.csv", 
+            data:[],   
+            dataType:"text", 
+            cache:false, 
+            success:function(data){   
+              
+              proteinData = data.split('\n');
+              
+            }
+        });
+
+        $.ajax({
+            type:"GET",    
+            url: baseURL+"file/NMF_meta.csv", 
+            data:[],   
+            dataType:"text",  
+            cache:false,
+            success:function(data){   
+              
+              metaArray = data.split('\n')
+            }
+          });
     });
+
+    hideSpinner();
+   
   </script>
 </html>
