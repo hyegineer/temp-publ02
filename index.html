@@ -89,9 +89,6 @@
     </div>
     <div id="mainContent"></div>
 </body>
-<style type="text/css">
-   
-</style>
 <script>
     showSpinner();
 
@@ -142,55 +139,13 @@
 
         $.ajax({
             type:"GET",    
-            url: baseURL+"file/Quantitation_genes.csv", 
+            url: baseURL+"file/nmf_all.csv", 
             data:[],   
             dataType:"text", 
             cache:false, 
             success:function(data){   
               
               nmfData = data.split('\n');
-              
-            }
-        });
-
-
-        $.ajax({
-            type:"GET",    
-            url: baseURL+"file/Quantitation_acetyl.csv", 
-            data:[],   
-            dataType:"text", 
-            cache:false, 
-            success:function(data){   
-              
-              acetylData = data.split('\n');
-              
-            }
-        });
-
-
-        $.ajax({
-            type:"GET",    
-            url: baseURL+"file/Quantitation_phospho.csv", 
-            data:[],   
-            dataType:"text", 
-            cache:false, 
-            success:function(data){   
-              
-              phosphoData = data.split('\n');
-              
-            }
-        });
-
-
-        $.ajax({
-            type:"GET",    
-            url: baseURL+"file/Quantitation_proteins.csv", 
-            data:[],   
-            dataType:"text", 
-            cache:false, 
-            success:function(data){   
-              
-              proteinData = data.split('\n');
               
             }
         });

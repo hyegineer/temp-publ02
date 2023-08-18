@@ -57,8 +57,3 @@ var nmfMetaObj = {
 
 
 var nmfData = []
-var acetylData = []
-var genesData = []
-var phosphoData = []
-var proteinData = []
-var metaArray = []
