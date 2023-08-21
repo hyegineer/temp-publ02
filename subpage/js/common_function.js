@@ -17,13 +17,16 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
 
   var patientTmp = []
 
+  debugger;
+
   for(var i=0; i<metaArray.length; i++){
     var tmp = metaArray[i].substr(0,metaArray[i].length-1);
     var tmpArray = tmp.split(',').slice(1,tmp.split(',').length)
     
     for(var j=0; j<patientsArray.length;j++){
-      if(tmpArray.indexOf(patientsArray[j])>-1){
-        patientTmp.push(tmpArray.indexOf(patientsArray[j]))
+      var paiTmp = patientsArray[j].substr(0,patientsArray[j].length-1)+'T';
+      if(tmpArray.indexOf(paiTmp)>-1){
+        patientTmp.push(tmpArray.indexOf(paiTmp));
       }
     }
   }
@@ -38,14 +41,17 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
           for(var j=0;j<patientTmp.length;j++){
             putArray.push(tmpArray[patientTmp[j]]);
           }
-          metaList.push({
-                'name':colValue,
-                'array':putArray
-          })
-          //if(ifMain){
-            //let set = new Set(tmpArray);
-            //nmfMetaDataJson[colValue] = Array.from(set).sort()
-          //}
+          if(colValue=='Sample.ID'){
+            metaList.push({
+              'name':colValue,
+              'array':patientsArray
+            })
+          }else{
+            metaList.push({
+              'name':colValue,
+              'array':putArray
+            })
+          }
         }
   }
   
@@ -74,13 +80,13 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
     colorScheme: { // optional color scheme. default is relative
       type: 'fixed',
       map: [{
-        value: 2000,
+        value: 12,
         color: '#0000ff'
       }, {
-        value: 1000,
+        value: 0,
         color: '#ffffff'
       }, {
-        value: 0,
+        value: -12,
         color: '#ff0000'
       }]
     },
@@ -89,8 +95,6 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
       params: {cluster: 'Rows and columns'}
     }]
   });
-
-  hideSpinner()
 
 }
 
@@ -102,7 +106,7 @@ function getConcatSampleList(){
 
   //Patients
   var nmfPat = nmfData[0].substr(0,nmfData[0].length-1);
-  patientsArray = patientsArray.concat(nmfPat.split(',').slice(3,nmfPat.split(',').length));
+  patientsArray = patientsArray.concat(nmfPat.split(',').slice(4,nmfPat.split(',').length));
 
   return patientsArray
 
@@ -116,7 +120,7 @@ function getConcatGeneList(){
   //Genens
   for(var i = 1; i<nmfData.length-1;i++) {
       var tmp = nmfData[i]
-      geneList.push(tmp.split(',')[2].split("_")[0])
+      geneList.push(tmp.split(',')[3].split("_")[0])
   }
 
   let patSet = new Set(geneList);
@@ -133,7 +137,7 @@ function getDataArray(){
 
   for(var i = 1; i<nmfData.length-1;i++) {
       var tmp = nmfData[i]
-      dataList.push(tmp.split(',').slice(3, tmp.split(',').length))
+      dataList.push(tmp.split(',').slice(4, tmp.split(',').length))
   }
 
   return dataList
@@ -148,7 +152,7 @@ function getGeneIDList(){
 
   for(var i = 1; i<nmfData.length-1;i++) {
       var tmp = nmfData[i]
-      uniprotIdArray.push(tmp.split(',')[2])
+      uniprotIdArray.push(tmp.split(',')[3])
   }
 
   return uniprotIdArray

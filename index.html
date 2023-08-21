@@ -90,7 +90,6 @@
     <div id="mainContent"></div>
 </body>
 <script>
-    showSpinner();
 
     $(function() {
 
@@ -144,7 +143,6 @@
             dataType:"text", 
             cache:false, 
             success:function(data){   
-              
               nmfData = data.split('\n');
               
             }
@@ -157,13 +155,10 @@
             dataType:"text",  
             cache:false,
             success:function(data){   
-              
               metaArray = data.split('\n')
             }
           });
     });
-
-    hideSpinner();
    
   </script>
 </html>

@@ -1,7 +1,4 @@
 <div id="nmfContent">
-  <div class="layerPopup">
-    <div class="spinner"></div>
-  </div>
   <div id = "select_menu" style="width:95%;margin:auto">
       <table id="selectTable" class = "table table-bordered table-hover table-striped">
         <thead>
@@ -32,53 +29,51 @@ var patientsArray = []
 var uniprotIdArray = []
 var dataArray = []
 var geneList = []
+var selectizeElement = null;
 
   $(function() {
-
-    showSpinner();
 
     //load nmf data
     getNmfData()
     
     $('#selectBtn').click(function(){
 
-      var subGeneArray = []
-      var subGeneSelect =[]
-      var subUniprotIdArray = []
-
       var subDataArray=[]
+      var subUniprotArray=[]
+      var tmpuniprotIdArray = $('#nmfGenesOpt').val().split(',');
+      //debugger
+      var subGenList = []
+      if(tmpuniprotIdArray.length == 0 || tmpuniprotIdArray[0] == ''){
+        tmpuniprotIdArray = ["CSNK2A1","KRAS","ERBB2","XPO1","TP53","EGFR"];
+        var control = selectizeElement[0].selectize;
+        control.setValue(["CSNK2A1","KRAS","ERBB2","XPO1","TP53","EGFR"]);
+      } 
 
-      if($('#nmfGenesOpt').val()!=null && $('#nmfGenesOpt').val()!=''){
-        subGeneSelect = $('#nmfGenesOpt').val().split(',');
-        $.each(subGeneSelect,function(n,v){
-          for(var i = 0; i<uniprotIdArray.length;i++) {
-            var tmp = uniprotIdArray[i]
-            if(tmp==v){
-              subUniprotIdArray.push(tmp)
-              subGeneArray.push(i)
+      for(var i = 0; i<tmpuniprotIdArray.length;i++){
+          $.each(uniprotIdArray,function(n,v){
+            if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
+              subGenList.push(n);
+              subUniprotArray.push(v);
+            } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
+              subGenList.push(n);
+              subUniprotArray.push(v);
             }
-          }
-        })
-      } else{
-        subUniprotIdArray = uniprotIdArray
-        for(var i = 0; i<uniprotIdArray.length;i++) {
-              subGeneArray.push(i)
-        }
+          })
       }
 
-      for(var i = 0; i<subGeneArray.length;i++){
-        var rowIdx = subGeneArray[i]
+      for(var i = 0; i<subGenList.length;i++){
+        var rowIdx = subGenList[i]
         subDataArray.push(dataArray[rowIdx])
       }
 
-      paintHeatMap(subUniprotIdArray,patientsArray,subDataArray,'nmfHeatmapDiv',metaArray)
+      paintHeatMap(subUniprotArray,patientsArray,subDataArray,'nmfHeatmapDiv',metaArray)
     });
 
   });
 
   function getNmfData(){
 
-    debugger;
+    //debugger;
     //Patients
     patientsArray = getConcatSampleList();
     
@@ -93,7 +88,7 @@ var geneList = []
       geneList.push({id:value,title:value})
     });
 
-    $('#nmfGenesOpt').selectize({
+    selectizeElement = $('#nmfGenesOpt').selectize({
       plugins: ["remove_button"],
       maxItems: 10,
       maxOptions: 100,
