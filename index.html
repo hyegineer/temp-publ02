@@ -84,14 +84,12 @@
            
         </div>
     </div>
-    <div class="layerPopup">
-        <div class="spinner"></div>
-    </div>
     <div id="mainContent"></div>
 </body>
 <script>
 
     $(function() {
+        showSpinner();
 
         function dropdownOpen() {      
             $('.dropdown').mouseover(function () {
@@ -138,18 +136,6 @@
 
         $.ajax({
             type:"GET",    
-            url: baseURL+"file/nmf_all.csv", 
-            data:[],   
-            dataType:"text", 
-            cache:false, 
-            success:function(data){   
-              nmfData = data.split('\n');
-              
-            }
-        });
-
-        $.ajax({
-            type:"GET",    
             url: baseURL+"file/NMF_meta.csv", 
             data:[],   
             dataType:"text",  
@@ -157,7 +143,7 @@
             success:function(data){   
               metaArray = data.split('\n')
             }
-          });
+          });    
     });
    
   </script>

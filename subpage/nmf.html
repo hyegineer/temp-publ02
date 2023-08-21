@@ -1,4 +1,7 @@
 <div id="nmfContent">
+  <div class="layerPopup">
+    <div class="spinner"></div>
+  </div>
   <div id = "select_menu" style="width:95%;margin:auto">
       <table id="selectTable" class = "table table-bordered table-hover table-striped">
         <thead>
@@ -32,9 +35,23 @@ var selectizeElement = null;
 
   $(function() {
 
-    //load nmf data
-    getNmfData()
-    
+    showSpinner()
+
+    $.ajax({
+      type:"GET",    
+      url: baseURL+"file/nmf_all.csv", 
+      data:[],   
+      dataType:"text", 
+      cache:false, 
+      success:function(data){   
+        nmfData = data.split('\n');
+        //load nmf data
+        getNmfData()
+
+        hideSpinner()
+      }
+    });
+
     $('#selectBtn').click(function(){
 
       var subDataArray=[]
