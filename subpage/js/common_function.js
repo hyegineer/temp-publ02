@@ -17,7 +17,7 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
 
   var patientTmp = []
 
-  debugger;
+  //debugger;
 
   for(var i=0; i<metaArray.length; i++){
     var tmp = metaArray[i].substr(0,metaArray[i].length-1);
@@ -80,19 +80,19 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
     colorScheme: { // optional color scheme. default is relative
       type: 'fixed',
       map: [{
-        value: 12,
+        value: -12,
         color: '#0000ff'
       }, {
         value: 0,
         color: '#ffffff'
       }, {
-        value: -12,
+        value: 12,
         color: '#ff0000'
       }]
     },
     tools: [{ // optional tools to run at load time
-      name: 'Hierarchical Clustering',
-      params: {cluster: 'Rows and columns'}
+      //name: 'Hierarchical Clustering',
+      //params: {cluster: 'Rows and columns'}
     }]
   });
 
