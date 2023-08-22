@@ -36,17 +36,18 @@ var selectizeElement = null;
   $(function() {
 
     showSpinner();
-    
+
     $.ajax({
       type:"GET",    
-      url: baseURL+"file/nmf_all.csv", 
+      url: baseURL+"file/tumer_nmf_all.csv", 
       data:[],   
       dataType:"text", 
       cache:false, 
       success:function(data){   
+        //debugger
         nmfData = data.split('\n');
         //load nmf data
-        getNmfData()
+        getNmfData(nmfData)
 
         hideSpinner()
       }
@@ -87,7 +88,7 @@ var selectizeElement = null;
 
   });
 
-  function getNmfData(){
+  function getNmfData(nmfData){
 
     //debugger;
     //Patients
@@ -95,7 +96,7 @@ var selectizeElement = null;
     
     //GeneIDs
     dataArray = getDataArray();
-    uniprotIdArray = getGeneIDList();
+    uniprotIdArray = getRowGeneList();
 
     //Genes
     var geneTmp = getConcatGeneList();
@@ -120,6 +121,7 @@ var selectizeElement = null;
     var subUniprotArray=[]
 
     var subGenList = []
+   
     for(var i = 0; i<tmpuniprotIdArray.length;i++){
       $.each(uniprotIdArray,function(n,v){
         if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){

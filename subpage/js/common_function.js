@@ -103,7 +103,6 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
 function getConcatSampleList(){
   
   var patientsArray = []
-
   //Patients
   var nmfPat = nmfData[0].substr(0,nmfData[0].length-1);
   patientsArray = patientsArray.concat(nmfPat.split(',').slice(4,nmfPat.split(',').length));
@@ -155,6 +154,25 @@ function getGeneIDList(){
       uniprotIdArray.push(tmp.split(',')[3])
   }
 
+  return uniprotIdArray
+
+}
+
+
+function getRowGeneList(){
+
+  var uniprotIdArray = []
+  for(var i = 1; i<nmfData.length-1;i++) {
+      var tmp = nmfData[i].split(",");
+      if(tmp[0] == 'RNA'){
+        uniprotIdArray.push(tmp[3] +"_g")
+      } else if(tmp[0] == 'PROTEIN'){
+        uniprotIdArray.push(tmp[3] +"_p ("+ tmp[1]+")")
+      } else {
+        uniprotIdArray.push(tmp[3])
+      }
+      
+  }
   return uniprotIdArray
 
 }
