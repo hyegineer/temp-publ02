@@ -23,6 +23,9 @@
         </thead>
       </table>
   </div>
+  <div id="legendDiv">
+    <input type="button" id="legendBtn" class="btn btn-default" value="Legend" style="width: 5%;margin-right: 5%;float: right;"/>
+  </div>
   <div id="nmfHeatmapDiv" style="width:95%;margin:auto;"> </div>
 </div>
 <script type="text/javascript">
@@ -37,9 +40,11 @@ var selectizeElement = null;
 
     showSpinner();
 
+    $('#nmfLegendDiv').addClass("hide");
+
     $.ajax({
       type:"GET",    
-      url: baseURL+"file/tumer_nmf_all.csv", 
+      url: baseURL+"file/nmf_all.csv", 
       data:[],   
       dataType:"text", 
       cache:false, 
@@ -84,6 +89,12 @@ var selectizeElement = null;
       }
 
       paintHeatMap(subUniprotArray,patientsArray,subDataArray,'nmfHeatmapDiv',metaArray)
+    });
+
+
+    $('#legendBtn').click(function(){
+      var colorMap = nmfMorpheus.project.columnColorModel.vectorNameToColorMap.map;
+      DrawLegendPopup(colorMap);
     });
 
   });

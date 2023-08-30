@@ -74,7 +74,7 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
     "columnMetadataModel": nmfMetaObj
   }
 
-  new morpheus.HeatMap({
+  nmfMorpheus = new morpheus.HeatMap({
     el: $('#'+heatMapDiv),
     dataset: morpheus.Dataset.fromJSON(json),
     colorScheme: { // optional color scheme. default is relative
@@ -96,6 +96,31 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
     }]
   });
 
+}
+
+function DrawLegendPopup(colorMap){
+  debugger;
+  var myPopup = window.open('', 'Legend', 'height=450, width=1000, scrollbars=yes');
+  var htmlStr="<div><table><tr>";
+  $.map(colorMap, function(k, v){
+      htmlStr += "<td style='white-space:nowrap;'>"+k.key+"</td>"
+  });
+  htmlStr += "</tr><tr>";
+
+  $.map(colorMap, function(k, v){
+      var newArr = $.map(k.value,function(key,value){return key});
+      var subArr = $.map(newArr[0],function(key,value){return key});
+      htmlStr += "<td style='white-space:nowrap;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0'>";
+      $.map(subArr,function(key,value){
+          htmlStr += "<tr><td bgcolor='"+key.value+"' height='10' width='10'></td>"+
+          "<td style='white-space:nowrap;'>"+key.key+"</td></tr>";
+      });
+      htmlStr += "</table></td>";
+  });
+
+  htmlStr += "</tr></table></div>";
+  myPopup.document.write(htmlStr);
+  myPopup.focus()   
 }
 
 
