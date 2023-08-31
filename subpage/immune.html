@@ -23,8 +23,9 @@
           </thead>
         </table>
     </div>
-    <div id="legendDiv">
-      <input type="button" id="legendBtn" class="btn btn-default" value="Legend" style="width: 5%;margin-right: 5%;float: right;"/>
+    <div id="legendDiv" style="float: right;margin-right: 3%;">
+      <button type="submit" class="btn btn-default" id="legendBtn"><span class="glyphicon glyphicon-adjust"></span> Legend</button>
+      <button type="submit" class="btn btn-default" id="helpBtn"><span class="glyphicon glyphicon-question-sign"></span> Help</button>
     </div>
     <div id="ImmuneHeatmapDiv" style="width:95%;margin:auto;"> </div>
   </div>
@@ -36,6 +37,7 @@
   var geneList = []
   var selectizeElement = null;
   var ImmuneData =[]
+  var immunMorpheus = null;
   
     $(function() {
   
@@ -108,13 +110,17 @@
           subDataArray.push(dataArray[rowIdx])
         }
   
-        paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
+        immunMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
       });
   
   
       $('#legendBtn').click(function(){
-        var colorMap = ImmuneMorpheus.project.columnColorModel.vectorNameToColorMap.map;
+        var colorMap = immunMorpheus.project.columnColorModel.vectorNameToColorMap.map;
         DrawLegendPopup(colorMap);
+      });
+  
+      $('#helpBtn').click(function(){
+        alert("개발중....")
       });
   
     });
@@ -171,7 +177,7 @@
         subDataArray.push(dataArray[rowIdx])
       }
   
-      paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
+      immunMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
     }
 
   

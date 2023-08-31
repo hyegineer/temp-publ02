@@ -1,4 +1,4 @@
-var baseURL = "http://127.0.0.1:8080/";
+var baseURL = "http://127.0.0.1:5500/";
 //var baseURL = "http://166.104.110.34:8080/";
 
 var nmfMetaSortData = ['Subtype','Subtype Core','Subtype Membership','Histology','Age','Sex','Smoking','TNM stage','Pathologic-N',
@@ -57,5 +57,59 @@ var nmfMetaObj = {
 
 
 var nmfData = []
+var myPopup = null;
 
-var nmfMorpheus = null;
+var toolbarMenu = {
+    File: [
+      'Open', null, 'Save Image', 'Save Dataset', 'Save Session', null, 'Close Tab', null, 'Rename' +
+      ' Tab'],
+    Tools: [
+      'New Heat Map',
+      null,
+      'Hierarchical Clustering',
+      'KMeans Clustering',
+      null,
+      'Marker Selection',
+      'Nearest Neighbors',
+      'Create Calculated Annotation',
+      null,
+      'Adjust',
+      'Collapse',
+      'Similarity Matrix',
+      'Transpose',
+      null,
+      'Chart',
+      null,
+      't-SNE',
+      null,
+      'Sort/Group',
+      'Filter',
+      null,
+      //'API'
+      null],
+    View: [
+      'Zoom In', 'Zoom Out', null, 'Fit To Window', 'Fit Rows To Window', 'Fit Columns To Window', null, '100%', null,
+      'Options'],
+    Edit: [
+      'Copy Image',
+      'Copy Selected Dataset',
+      null,
+      'Move Selected Rows To Top',
+      'Annotate Selected Rows',
+      'Copy Selected Rows',
+      'Invert' +
+      ' Selected Rows',
+      'Select All Rows',
+      'Clear Selected Rows',
+      null,
+      'Move Selected Columns To Top',
+      'Annotate Selected Columns',
+      'Copy Selected Columns',
+      'Invert' +
+      ' Selected Columns',
+      'Select All Columns',
+      'Clear Selected Columns']
+      /*Help: [
+        'Find Action', null, 'Contact', 'Configuration', 'Tutorial', 'Source Code', null, 'Keyboard' +
+        ' Shortcuts']*/
+  }

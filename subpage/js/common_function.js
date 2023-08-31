@@ -74,7 +74,7 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
     "columnMetadataModel": nmfMetaObj
   }
 
-  nmfMorpheus = new morpheus.HeatMap({
+  var comMorpheus = new morpheus.HeatMap({
     el: $('#'+heatMapDiv),
     dataset: morpheus.Dataset.fromJSON(json),
     colorScheme: { // optional color scheme. default is relative
@@ -90,35 +90,53 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
         color: '#ff0000'
       }]
     },
+    showRowNumber: true,
     tools: [{ // optional tools to run at load time
       //name: 'Hierarchical Clustering',
       //params: {cluster: 'Rows and columns'}
-    }]
+    }],
+    menu:toolbarMenu
   });
+
+  return comMorpheus;
 
 }
 
-function DrawLegendPopup(colorMap){
-  debugger;
-  var myPopup = window.open('', 'Legend', 'height=450, width=1000, scrollbars=yes');
-  var htmlStr="<div><table><tr>";
-  $.map(colorMap, function(k, v){
-      htmlStr += "<td style='white-space:nowrap;'>"+k.key+"</td>"
-  });
-  htmlStr += "</tr><tr>";
 
+
+/////////////////////// Legend popup//////////////////////////////
+
+function DrawLegendPopup(colorMap){
+  
+  if(myPopup!=null){
+    myPopup.close();
+  }
+  
+  myPopup = window.open('', 'Legend', 'height=600, width=1200, scrollbars=yes');
+  var htmlStr="<div><table><tr>";
+  var substr="";
+  var i = 1;
   $.map(colorMap, function(k, v){
+      htmlStr += "<td style='text-align: center;'>"+k.key+"</td>";
       var newArr = $.map(k.value,function(key,value){return key});
       var subArr = $.map(newArr[0],function(key,value){return key});
-      htmlStr += "<td style='white-space:nowrap;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0'>";
+      substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;'>";
       $.map(subArr,function(key,value){
-          htmlStr += "<tr><td bgcolor='"+key.value+"' height='10' width='10'></td>"+
-          "<td style='white-space:nowrap;'>"+key.key+"</td></tr>";
+        substr += "<tr><td bgcolor='"+key.value+"' height='15' width='15'></td>"+
+          "<td>"+key.key+"</td></tr>";
       });
-      htmlStr += "</table></td>";
+      substr += "</table></td>";
+      if(i%8==0){
+        htmlStr +="</tr><tr>";
+        htmlStr += substr;
+        substr = "";
+        htmlStr +="</tr><tr>";
+      }
+      i++;
   });
+  htmlStr += substr;
+  htmlStr += "</tr><tr></table></div>";
 
-  htmlStr += "</tr></table></div>";
   myPopup.document.write(htmlStr);
   myPopup.focus()   
 }
