@@ -124,6 +124,14 @@
       });
   
     });
+
+    document.addEventListener('mouseup', function() {
+    if ((event.button == 0) || (event.which == 1)) {
+      var index = immunMorpheus.project.hoverRowIndex
+      var gene = subGenArray[index].split('_')[0]
+      window.open('https://www.uniprot.org/uniprotkb?query='+gene, '_blank');
+    }
+  });
   
     function getNmfData(nmfData){
   
