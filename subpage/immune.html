@@ -1,0 +1,178 @@
+<div id="ImmuneContent">
+    <div class="layerPopup">
+      <div class="spinner"></div>
+    </div>
+    <div id = "select_menu" style="width:95%;margin:auto">
+        <table id="selectTable" class = "table table-bordered table-hover table-striped">
+          <thead>
+            <tr class="active">
+                <th class="th-text-align" style="width: 20%;">
+                    Genes of interest (max. 10)
+                </th>
+                <th>
+                  <div class="control-group" style="width: 95%;">
+                    <input type="text" id="ImmuneGenesOpt" data-width="95%" name="ImmuneGenesSelect" value="CSNK2A1,KRAS,ERBB2,XPO1,TP53,EGFR"/>
+                  </div>
+                </th>
+                <th style="width: 7%;">
+                    <div class="btn-toolbar">
+                        <input type="button" id="selectBtn" class="btn btn-primary" value="Apply" style="width: 90%;margin-right:5px;"/>
+                    </div>
+                </th>
+            </tr>
+          </thead>
+        </table>
+    </div>
+    <div id="legendDiv">
+      <input type="button" id="legendBtn" class="btn btn-default" value="Legend" style="width: 5%;margin-right: 5%;float: right;"/>
+    </div>
+    <div id="ImmuneHeatmapDiv" style="width:95%;margin:auto;"> </div>
+  </div>
+  <script type="text/javascript">
+  
+  var patientsArray = []
+  var uniprotIdArray = []
+  var dataArray = []
+  var geneList = []
+  var selectizeElement = null;
+  var ImmuneData =[]
+  
+    $(function() {
+  
+      showSpinner();
+  
+      $('#ImmuneLegendDiv').addClass("hide");
+  
+      $.ajax({
+        type:"GET",    
+        url: baseURL+"file/Immune.csv", 
+        //url: "http://127.0.0.1:5501"+"/file/Immune.csv", 
+        data:[],   
+        dataType:"text", 
+        cache:false, 
+        success:function(data){   
+          //debugger
+          ImmuneData = data.split('\n');
+          //load Immune data
+          //getImmuneData(ImmuneData)
+        //   getNmfData(ImmuneData)
+  
+          hideSpinner()
+        }
+      });
+
+      $.ajax({
+      type:"GET",    
+      url: baseURL+"file/tumer_nmf_all.csv", 
+      data:[],   
+      dataType:"text", 
+      cache:false, 
+      success:function(data){   
+        //debugger
+        nmfData = data.split('\n');
+        //load nmf data
+        getNmfData(nmfData)
+        // getNmfData(ImmuneData)
+
+        hideSpinner()
+      }
+      });
+  
+      $('#selectBtn').click(function(){
+  
+        var subDataArray=[]
+        var subUniprotArray=[]
+        var tmpuniprotIdArray = $('#ImmuneGenesOpt').val().split(',');
+        //debugger
+        var subGenList = []
+        if(tmpuniprotIdArray.length == 0 || tmpuniprotIdArray[0] == ''){
+          tmpuniprotIdArray = ["CSNK2A1","KRAS","ERBB2","XPO1","TP53","EGFR"];
+          var control = selectizeElement[0].selectize;
+          control.setValue(["CSNK2A1","KRAS","ERBB2","XPO1","TP53","EGFR"]);
+        } 
+  
+        for(var i = 0; i<tmpuniprotIdArray.length;i++){
+            $.each(uniprotIdArray,function(n,v){
+              if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
+                subGenList.push(n);
+                subUniprotArray.push(v);
+              } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
+                subGenList.push(n);
+                subUniprotArray.push(v);
+              }
+            })
+        }
+  
+        for(var i = 0; i<subGenList.length;i++){
+          var rowIdx = subGenList[i]
+          subDataArray.push(dataArray[rowIdx])
+        }
+  
+        paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
+      });
+  
+  
+      $('#legendBtn').click(function(){
+        var colorMap = ImmuneMorpheus.project.columnColorModel.vectorNameToColorMap.map;
+        DrawLegendPopup(colorMap);
+      });
+  
+    });
+  
+    function getNmfData(nmfData){
+  
+      //debugger;
+      //Patients
+      patientsArray = getConcatSampleList();
+      
+      //GeneIDs
+      dataArray = getDataArray();
+      uniprotIdArray = getRowGeneList();
+  
+      //Genes
+      var geneTmp = getConcatGeneList();
+  
+      $.each(geneTmp,function(n,value) { 
+        geneList.push({id:value,title:value})
+      });
+  
+      selectizeElement = $('#ImmuneGenesOpt').selectize({
+        plugins: ["remove_button"],
+        maxItems: 10,
+        maxOptions: 100,
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        sortField: 'title',
+        options: geneList,
+        create: false
+      });
+  
+      var tmpuniprotIdArray = $('#ImmuneGenesOpt').val().split(',');
+      var subUniprotArray=[]
+  
+      var subGenList = []
+     
+      for(var i = 0; i<tmpuniprotIdArray.length;i++){
+        $.each(uniprotIdArray,function(n,v){
+          if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
+            subGenList.push(n);
+            subUniprotArray.push(v);
+          } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
+            subGenList.push(n);
+            subUniprotArray.push(v);
+          }
+        })
+      }
+  
+      var subDataArray = []
+      for(var i = 0; i<subGenList.length;i++){
+        var rowIdx = subGenList[i]
+        subDataArray.push(dataArray[rowIdx])
+      }
+  
+      paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
+    }
+
+  
+  </script>
