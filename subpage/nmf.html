@@ -37,6 +37,7 @@ var dataArray = []
 var geneList = []
 var selectizeElement = null;
 var nmfMorpheus = null;
+var linkArray =[] 
 var subGenArray = []
 
   $(function() {
@@ -65,6 +66,7 @@ var subGenArray = []
 
       var subDataArray=[]
       var subUniprotArray=[]
+      var subLinkArray = []
       var tmpuniprotIdArray = $('#nmfGenesOpt').val().split(',');
       //debugger
       var subGenList = []
@@ -79,21 +81,33 @@ var subGenArray = []
             if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
               subGenList.push(n);
               subUniprotArray.push(v);
+              $.each(linkArray,function(m,y){
+                if(v==y.split('=')[0]){
+                  subLinkArray.push(y.split('=')[1]);
+                  return;
+                }
+              })
             } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
               subGenList.push(n);
               subUniprotArray.push(v);
+              $.each(linkArray,function(m,y){
+                if(v==y.split('=')[0]){
+                  subLinkArray.push(y.split('=')[1]);
+                  return;
+                }
+              })
             }
           })
       }
+
+      subGenArray = subUniprotArray
 
       for(var i = 0; i<subGenList.length;i++){
         var rowIdx = subGenList[i]
         subDataArray.push(dataArray[rowIdx])
       }
 
-      subGenArray = subUniprotArray;
-
-      nmfMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'nmfHeatmapDiv',metaArray);
+      nmfMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'nmfHeatmapDiv',subLinkArray);
     });
 
 
@@ -109,10 +123,20 @@ var subGenArray = []
   });
 
   document.addEventListener('mouseup', function() {
-    if ((event.button == 0) || (event.which == 1)) {
+    
+    if (nmfMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
       var index = nmfMorpheus.project.hoverRowIndex
-      var gene = subGenArray[index].split('_')[0]
-      window.open('https://www.uniprot.org/uniprotkb?query='+gene, '_blank');
+      var gene = subGenArray[index]
+      var link = ""
+      $.each(linkArray,function(m,y){
+        if(gene==y.split('=')[0]){
+          link = y.split('=')[1]
+          return;
+        }
+      });
+      if(link!='X'){
+        window.open('https://www.uniprot.org/uniprotkb/'+link+'/entry', '_blank');
+      }
     }
   });
 
@@ -126,6 +150,8 @@ var subGenArray = []
     //GeneIDs
     dataArray = getDataArray();
     uniprotIdArray = getRowGeneList();
+
+    linkArray = getUniprotIDList(uniprotIdArray);
 
     //Genes
     var geneTmp = getConcatGeneList();
@@ -150,20 +176,34 @@ var subGenArray = []
     var subUniprotArray=[]
 
     var subGenList = []
+    var subLinkArray = []
    
     for(var i = 0; i<tmpuniprotIdArray.length;i++){
       $.each(uniprotIdArray,function(n,v){
         if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
           subGenList.push(n);
           subUniprotArray.push(v);
+          $.each(linkArray,function(m,y){
+            if(v==y.split('=')[0]){
+              subLinkArray.push(y.split('=')[1]);
+              return;
+            }
+          })
+          
         } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
           subGenList.push(n);
           subUniprotArray.push(v);
+          $.each(linkArray,function(m,y){
+            if(v==y.split('=')[0]){
+              subLinkArray.push(y.split('=')[1]);
+              return;
+            }
+          })
         }
       })
     }
 
-    subGenArray = subUniprotArray;
+    subGenArray = subUniprotArray
 
     var subDataArray = []
     for(var i = 0; i<subGenList.length;i++){
@@ -171,7 +211,7 @@ var subGenArray = []
       subDataArray.push(dataArray[rowIdx])
     }
 
-    nmfMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'nmfHeatmapDiv',metaArray)
+    nmfMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'nmfHeatmapDiv',metaArray,subLinkArray)
 
   }
 

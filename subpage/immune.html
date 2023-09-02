@@ -38,6 +38,8 @@
   var selectizeElement = null;
   var ImmuneData =[]
   var immunMorpheus = null;
+  var linkArray =[] 
+  var subGenArray = []
   
     $(function() {
   
@@ -55,11 +57,7 @@
         success:function(data){   
           //debugger
           ImmuneData = data.split('\n');
-          //load Immune data
-          //getImmuneData(ImmuneData)
-        //   getNmfData(ImmuneData)
-  
-          hideSpinner()
+          
         }
       });
 
@@ -85,6 +83,7 @@
         var subDataArray=[]
         var subUniprotArray=[]
         var tmpuniprotIdArray = $('#ImmuneGenesOpt').val().split(',');
+        var subLinkArray = []
         //debugger
         var subGenList = []
         if(tmpuniprotIdArray.length == 0 || tmpuniprotIdArray[0] == ''){
@@ -98,19 +97,33 @@
               if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
                 subGenList.push(n);
                 subUniprotArray.push(v);
+                $.each(linkArray,function(m,y){
+                  if(v==y.split('=')[0]){
+                    subLinkArray.push(y.split('=')[1]);
+                    return;
+                  }
+                })
               } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
                 subGenList.push(n);
                 subUniprotArray.push(v);
+                $.each(linkArray,function(m,y){
+                  if(v==y.split('=')[0]){
+                    subLinkArray.push(y.split('=')[1]);
+                    return;
+                  }
+                })
               }
             })
         }
+
+        subGenArray = subUniprotArray
   
         for(var i = 0; i<subGenList.length;i++){
           var rowIdx = subGenList[i]
           subDataArray.push(dataArray[rowIdx])
         }
   
-        immunMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
+        immunMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData,subLinkArray)
       });
   
   
@@ -126,12 +139,22 @@
     });
 
     document.addEventListener('mouseup', function() {
-    if ((event.button == 0) || (event.which == 1)) {
+    
+    if (immunMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
       var index = immunMorpheus.project.hoverRowIndex
-      var gene = subGenArray[index].split('_')[0]
-      window.open('https://www.uniprot.org/uniprotkb?query='+gene, '_blank');
+      var gene = subGenArray[index]
+      var link = ""
+      $.each(linkArray,function(m,y){
+        if(gene==y.split('=')[0]){
+          link = y.split('=')[1]
+          return;
+        }
+      });
+      if(link!='X'){
+        window.open('https://www.uniprot.org/uniprotkb/'+link+'/entry', '_blank');
+      }
     }
-  });
+    });
   
     function getNmfData(nmfData){
   
@@ -145,6 +168,8 @@
   
       //Genes
       var geneTmp = getConcatGeneList();
+
+      linkArray = getUniprotIDList(uniprotIdArray);
   
       $.each(geneTmp,function(n,value) { 
         geneList.push({id:value,title:value})
@@ -166,18 +191,33 @@
       var subUniprotArray=[]
   
       var subGenList = []
+      var subLinkArray = []
      
       for(var i = 0; i<tmpuniprotIdArray.length;i++){
         $.each(uniprotIdArray,function(n,v){
           if(v.indexOf("_")>-1 && v.split("_")[0] == tmpuniprotIdArray[i]){
             subGenList.push(n);
             subUniprotArray.push(v);
+            $.each(linkArray,function(m,y){
+              if(v==y.split('=')[0]){
+                subLinkArray.push(y.split('=')[1]);
+                return;
+              }
+            })
           } else if(v.indexOf("_")==-1 && v == tmpuniprotIdArray[i]){
             subGenList.push(n);
             subUniprotArray.push(v);
+            $.each(linkArray,function(m,y){
+              if(v==y.split('=')[0]){
+                subLinkArray.push(y.split('=')[1]);
+                return;
+              }
+            })
           }
         })
       }
+
+      subGenArray = subUniprotArray
   
       var subDataArray = []
       for(var i = 0; i<subGenList.length;i++){
@@ -185,7 +225,7 @@
         subDataArray.push(dataArray[rowIdx])
       }
   
-      immunMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData)
+      immunMorpheus = paintHeatMap(subUniprotArray,patientsArray,subDataArray,'ImmuneHeatmapDiv',ImmuneData,subLinkArray)
     }
 
   

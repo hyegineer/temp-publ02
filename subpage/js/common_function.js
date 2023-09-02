@@ -13,7 +13,7 @@ function hideSpinner() {
 ////dataArray : 데이터 [[]] 2차원 배열
 ////heatMapDiv : headmap div id 
 ////metaArray : meta data 배열 
-function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArray){
+function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArray,linkArray){
 
   var patientTmp = []
 
@@ -69,6 +69,9 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
       "vectors": [{
         "name": "Gene",
         "array": uniprotIdArray
+      },{
+        "name": "Link",
+        "array": linkArray
       }]
     },
     "columnMetadataModel": nmfMetaObj
@@ -90,7 +93,7 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
         color: '#ff0000'
       }]
     },
-    showRowNumber: true,
+    //showRowNumber: true,
     tools: [{ // optional tools to run at load time
       //name: 'Hierarchical Clustering',
       //params: {cluster: 'Rows and columns'}
@@ -218,4 +221,16 @@ function getRowGeneList(){
   }
   return uniprotIdArray
 
+}
+
+
+function getUniprotIDList(geneList){
+
+  var uniprotIdArray = []
+  for(var i= 0 ; i<geneList.length ; i++){
+    var tmp = nmfData[i+1].split(',');
+    uniprotIdArray.push(geneList[i]+"="+tmp[1].split('_')[0])
+  }
+
+  return uniprotIdArray
 }
