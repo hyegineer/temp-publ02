@@ -14,20 +14,26 @@
 
   <script>
 
-
     var matrix = []
     var rowHeader = []
     var metaData = []
     var patientData = []
 
-
     $.ajax({
       type: "GET",
-      url: "../file/NMF_meta.csv",
+      url: "../file/Quantitation_genes.csv",
       dataType: "text",
       cache: false,
       success: function (data) {
         data = data.split("\n");
+        let rows = data.slice(1).map((row) => row.split(","));
+        rows.map((row) => {
+          rowHeader.push(row[0])
+        });
+        rows.map((row) => {
+          matrix.push(row.slice(1))
+        });
+        data = metaArray;
         const patientHeader = []
         data.map((row) => {
           const rowData = row.split(",");
@@ -41,25 +47,10 @@
           })
         }
 
-        $.ajax({
-          type: "GET",
-          url: "../file/Quantitation_genes.csv",
-          dataType: "text",
-          cache: false,
-          success: function (data) {
-            data = data.split("\n");
-            let rows = data.slice(1).map((row) => row.split(","));
-            rows.map((row) => {
-              rowHeader.push(row[0])
-            });
-            rows.map((row) => {
-              matrix.push(row.slice(1))
-            });
-            drawHeatMap(matrix, rowHeader);
-          },
-        });
+        drawHeatMap(matrix, rowHeader);
       },
     });
+
 
 
     //draw
