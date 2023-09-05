@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protein</title>
+</head>
+
+<body>
+
+
+  <div id="heatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
+
+
+  <script>
+
+
+
+    var matrix = []
+    var rowHeader = []
+    var metaData = []
+    var patientData = []
+
+
+    $.ajax({
+      type: "GET",
+      url: "../file/NMF_meta.csv",
+      dataType: "text",
+      cache: false,
+      success: function (data) {
+        data = data.split("\n");
+        const patientHeader = []
+        data.map((row) => {
+          const rowData = row.split(",");
+          patientHeader.push(rowData[0])
+          patientData.push(rowData.slice(1))
+        });
+        for (let i = 0; i < patientHeader.length; i++) {
+          metaData.push({
+            name: patientHeader[i],
+            array: patientData[i]
+          })
+        }
+
+        $.ajax({
+          type: "GET",
+          url: "../file/Quantitation_proteins.csv",
+          dataType: "text",
+          cache: false,
+          success: function (data) {
+            data = data.split("\n");
+            let rows = data.slice(1).map((row) => row.split(","));
+            rows.map((row) => {
+              rowHeader.push(row[0])
+            });
+            rows.map((row) => {
+              matrix.push(row.slice(2))
+            });
+            drawHeatMap(matrix, rowHeader);
+          },
+        });
+      },
+    });
+
+
+    //draw
+    function drawHeatMap(data, protiens) {
+      let json = {
+        rows: protiens.length,
+        columns: patientData[0].length,
+        seriesArrays: [data],
+        seriesDataTypes: ["Float32"],
+        seriesNames: ["Protein"],
+        rowMetadataModel: {
+          vectors: [
+            {
+              name: "Protein",
+              array: protiens,
+            },
+          ],
+        },
+        columnMetadataModel: {
+          vectors: metaData
+        },
+      };
+
+      new morpheus.HeatMap({
+        el: $('#heatmapDiv'),
+        dataset: morpheus.Dataset.fromJSON(json),
+        colorScheme: {
+          type: 'fixed',
+        },
+      });
+    }
+  </script>
+</body>
+
+</html>

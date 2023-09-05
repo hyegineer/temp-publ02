@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Box Plot</title>
+  
+</head>
+
+<body>
+  <div style="display: flex;margin: auto;">
+
+    <div style="display: flex;margin: auto;">
+      <div style="width: 300px;">
+        <select id="select-tools" multiple placeholder="Target"></select>
+      </div>
+      <div style="width: 300px;margin-left: 10px;">
+        <select id="select-tools1" multiple placeholder="Group by"></select>
+      </div>
+      <button id="apply-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
+        Apply
+      </button>
+    </div>
+  </div>
+
+  <div style="display: flex;">
+    <div id="myDiv" style="width: 50%; height: 400px;"></div>
+    <div id="myDiv1" style="width: 50%; height: 400px;"></div>
+  </div>
+
+  <div style="display: flex;">
+    <div id="myDiv2" style="width: 50%; height: 400px;"></div>
+    <div id="myDiv3" style="width: 50%; height: 400px;"></div>
+  </div>
+
+
+  <script>
+
+    var $select = $('#select-tools').selectize({
+      plugins: ["remove_button"],
+      maxItems: 1,
+      maxOptions: 100,
+      valueField: 'id',
+      labelField: 'title',
+      searchField: 'title',
+      options: [],
+      create: false,
+    });
+
+    var $select1 = $('#select-tools1').selectize({
+      plugins: ["remove_button"],
+      maxItems: 1,
+      maxOptions: 100,
+      valueField: 'id',
+      labelField: 'title',
+      searchField: 'title',
+      options: [],
+      create: false
+    });
+
+
+
+    var allUniqueValue = new Map();
+    var allPatient = new Map();
+    var proteinPatient = []
+    var genePatient = []
+    var acetlysitePatient = []
+    var phosphositePatient = []
+    var allProtein = new Map();
+    var allGene = new Map();
+    var allAcetlysite = new Map();
+    var allPhosphosite = new Map();
+    var patientInfo = [];
+    var targetOptions = []
+    var index = 1
+
+
+    $.ajax({
+      type: "GET",
+      url: "../file/NMF_meta.csv",
+      dataType: "text",
+      cache: false,
+      success: function (data) {
+        const patientData = data.split("\n");
+        const rowHeader = [];
+        patientData.map((row) => {
+          const rowData = row.split(",");
+          rowHeader.push(rowData[0]);
+          let uniqueValue = unique(rowData.slice(1));
+          allUniqueValue.set(rowData[0], uniqueValue);
+        });
+        allUniqueValue.delete('Sample.ID');
+        allUniqueValue.delete('Subtype Membership');
+        allUniqueValue.delete('Age');
+        //get patientInfo
+        for (let i = 1; i < patientData[0].split(",").length; i++) {
+          patientInfo.push(new PatientMetaData());
+        }
+        for (let i = 0; i < rowHeader.length; i++) {
+          let row = patientData[i].split(",").slice(1)
+          for (let j = 0; j < row.length; j++) {
+            patientInfo[j][rowHeader[i]] = row[j];
+          }
+        }
+        patientInfo.forEach((value) => {
+          allPatient.set(value['Sample.ID'], value)
+        });
+
+
+        $.ajax({
+          type: "GET",
+          url: "../file/Quantitation_proteins.csv",
+          dataType: "text",
+          cache: false,
+          success: function (data) {
+            data = data.split("\n");
+            proteinPatient = data[0].split(",").slice(2);
+            for (let i = 1; i < data.length; i++) {
+              const row = data[i].split(",")
+              allProtein.set(row[0], row.slice(2))
+            }
+            //"RE-P231-T\r"
+            let last = proteinPatient[proteinPatient.length - 1]
+            proteinPatient[proteinPatient.length - 1] = last.substring(0, last.length - 1)
+            // 这里的样本包含正常样本，但是meta数据只有癌症患者，所以在分类数据时去除正常患者
+            // console.log(proteinPatient)
+            // console.log(allProtein)
+            for (const key of allProtein.keys()) {
+              targetOptions.push({ id: index, title: key })
+              index++;
+            }
+            $.ajax({
+              type: "GET",
+              url: "../file/Quantitation_acetyl.csv",
+              dataType: "text",
+              cache: false,
+              success: function (data) {
+                data = data.split("\n");
+                acetlysitePatient = data[0].split(",").slice(2);
+                for (let i = 1; i < data.length; i++) {
+                  const row = data[i].split(",")
+                  allAcetlysite.set(row[0], row.slice(2))
+                }
+                //"RE-P231-T\r"
+                let last = acetlysitePatient[acetlysitePatient.length - 1]
+                acetlysitePatient[acetlysitePatient.length - 1] = last.substring(0, last.length - 1)
+                // 这里的样本包含正常样本，但是meta数据只有癌症患者，所以在分类数据时去除正常患者
+                // console.log(acetlysitePatient)
+                // console.log(allAcetlysite)
+                for (const key of allAcetlysite.keys()) {
+                  targetOptions.push({ id: index, title: key })
+                  index++;
+                }
+
+                $.ajax({
+                  type: "GET",
+                  url: "../file/Quantitation_phospho.csv",
+                  dataType: "text",
+                  cache: false,
+                  success: function (data) {
+                    data = data.split("\n");
+                    phosphositePatient = data[0].split(",").slice(2);
+                    for (let i = 1; i < data.length; i++) {
+                      const row = data[i].split(",")
+                      allPhosphosite.set(row[0], row.slice(2))
+                    }
+                    let last = phosphositePatient[phosphositePatient.length - 1]
+                    phosphositePatient[phosphositePatient.length - 1] = last.substring(0, last.length - 1)
+                    // 这里的样本包含正常样本，但是meta数据只有癌症患者，所以在分类数据时去除正常患者
+                    // console.log(phosphositePatient)
+                    // console.log(allPhosphosite)
+                    for (const key of allPhosphosite.keys()) {
+                      targetOptions.push({ id: index, title: key })
+                      index++;
+                    }
+
+                    $.ajax({
+                      type: "GET",
+                      url: "../file/Quantitation_genes.csv",
+                      dataType: "text",
+                      cache: false,
+                      success: function (data) {
+                        data = data.split("\n");
+                        genePatient = data[0].split(",").slice(1);
+                        for (let i = 1; i < data.length; i++) {
+                          const row = data[i].split(",")
+                          allGene.set(row[0], row.slice(1))
+                        }
+                        //去除多余空值
+                        genePatient = genePatient.slice(0, genePatient.indexOf(''))
+                        // console.log(genePatient)
+                        // console.log(allGene)
+                        for (const key of allGene.keys()) {
+                          targetOptions.push({ id: index, title: key })
+                          index++;
+                        }
+
+                        let groupOptions = []
+                        index = 1
+                        for (const key of allUniqueValue.keys()) {
+                          groupOptions.push({ id: index, title: key })
+                          index++;
+                        }
+                        var selectizeControl = $select[0].selectize;
+                        selectizeControl.addOption(targetOptions)
+                        var selectizeControl1 = $select1[0].selectize;
+                        selectizeControl1.addOption(groupOptions)
+
+                      },
+                    });
+                  },
+                });
+              },
+            });
+          },
+        });
+      },
+    });
+
+    function unique(array) {
+      return array.filter((value, index, self) => {
+        return value !== 'None' && value !== '' && self.indexOf(value) === index;
+      });
+    }
+
+    $("#apply-btn").click(function () {
+      const targetValue = $('#select-tools').text();
+      const groupValue = $('#select-tools1').text();
+      const uniqueValue = allUniqueValue.get(groupValue);
+      let idx = 0;
+      let data = [];
+      for (var i = 0; i < uniqueValue.length; i++) {
+        data.push({
+          y: [],
+          type: "box",
+          name: uniqueValue[i],
+          marker: {
+            color: color[idx++],
+          },
+        })
+      }
+      let targetArray = []
+      let targetPatient = [];
+      if (allGene.has(targetValue)) {
+        targetArray = allGene.get(targetValue)
+        targetPatient = genePatient
+      } else if (allProtein.has(targetValue)) {
+        targetArray = allProtein.get(targetValue)
+        targetPatient = proteinPatient
+      } else if (allAcetlysite.has(targetValue)) {
+        targetArray = allAcetlysite.get(targetValue)
+        targetPatient = acetlysitePatient
+      } else if (allPhosphosite.has(targetValue)) {
+        targetArray = allPhosphosite.get(targetValue)
+        targetPatient = phosphositePatient
+      }
+      targetArray.forEach((value, index) => {
+        if (allPatient.has(targetPatient[index])) {
+          const curPatient = allPatient.get(targetPatient[index]);
+          for (var i = 0; i < uniqueValue.length; i++) {
+            if (curPatient[groupValue] === uniqueValue[i]) {
+              data[i]["y"].push(value);
+              break;
+            }
+          }
+        }
+      })
+      var layout = {
+        title: targetValue,
+        xaxis: {
+          title: {
+            text: groupValue,
+          }
+        },
+      };
+
+      Plotly.newPlot("myDiv", data, layout);
+      Plotly.newPlot("myDiv1", data, layout);
+      Plotly.newPlot("myDiv2", data, layout);
+      Plotly.newPlot("myDiv3", data, layout);
+    })
+
+
+  </script>
+</body>
+
+</html>
