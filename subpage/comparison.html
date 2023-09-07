@@ -12,8 +12,7 @@
   .container1 {
     display: flex;
     flex-direction: column;
-    height: 85vh;
-    /* 100% of the viewport height */
+    height: 76vh;
   }
 
   .box1,
@@ -24,9 +23,15 @@
     align-items: center;
   }
 
-  .flex-btn {
+  .flex-hori {
     display: flex;
+    align-items: center;
     justify-content: center;
+  }
+
+  .char-div {
+    width: 50%;
+    height: 38vh;
   }
 </style>
 
@@ -48,17 +53,21 @@
 
   <div class="container1">
     <div class="box1">
-      <div id="myDiv0" style="width: 50%;"></div>
-      <div id="myDiv1" style="width: 50%;"></div>
+      <div id="myDiv0" class="char-div"></div>
+      <div id="myDiv1" class="char-div"></div>
     </div>
 
     <div class="box2">
-      <div id="myDiv2" style="width: 50%;"></div>
-      <div id="myDiv3" style="width: 50%; "></div>
+      <div id="myDiv2" class="char-div"></div>
+      <div id="myDiv3" class="char-div"></div>
     </div>
   </div>
 
-  <div class="flex-btn">
+  <div class="flex-hori">
+    <div id="page-index"></div>
+  </div>
+
+  <div class="flex-hori">
     <button id="pre-btn" type="button" class="btn btn-primary">
       Pre
     </button>
@@ -70,10 +79,11 @@
 
   <script>
 
-    let preBtn = $("#pre-btn")
+    var preBtn = $("#pre-btn")
     preBtn.prop("disabled", true)
-    let nextBtn = $("#next-btn")
-
+    var nextBtn = $("#next-btn")
+    nextBtn.prop("disabled", true)
+    var pageIndex = $("#page-index")
 
     var $select = $('#select-tools').selectize({
       plugins: ["remove_button"],
@@ -262,6 +272,7 @@
 
     var res = new Map()
     var page = 0
+    var limit = 0
     var groupValue = ""
     $("#apply-btn").click(function () {
       res = new Map()
@@ -318,16 +329,20 @@
         })
         res.set(curTarget, data)
       }
-      if (res.size <= 4) nextBtn.prop("disabled", true)
-      else nextBtn.prop("disabled",false)
+      limit = Math.ceil(res.size / 4)
       draw(res)
-
-
     })
 
     function draw(res) {
-      for (let i = 0; i < 4 ;i++) {
-        Plotly.purge("myDiv"+i)
+      if (res.size !== 0) {
+        pageIndex.text((page + 1) + "/" + limit)
+        if (page === 0) preBtn.prop("disabled", true)
+        else preBtn.prop("disabled", false)
+        if ((page + 1) == limit) nextBtn.prop("disabled", true)
+        else nextBtn.prop("disabled", false)
+      }
+      for (let i = 0; i < 4; i++) {
+        Plotly.purge("myDiv" + i)
       }
       let allKeys = Array.from(res.keys())
       let start = page * 4
@@ -352,7 +367,6 @@
     nextBtn.click(function () {
       page++;
       draw(res)
-
     })
 
   </script>
