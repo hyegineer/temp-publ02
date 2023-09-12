@@ -36,6 +36,9 @@
 </style>
 
 <body>
+  <div class="layerPopup">
+    <div class="spinner"></div>
+  </div>
   <div style="display: flex;margin: auto;">
 
     <div style="display: flex;margin: auto;">
@@ -78,6 +81,11 @@
 
 
   <script>
+
+
+
+
+
 
     var preBtn = $("#pre-btn")
     preBtn.prop("disabled", true)
@@ -126,6 +134,7 @@
 
 
     function getData() {
+      showSpinner();
       const patientData = metaArray;
       const rowHeader = [];
       patientData.map((row) => {
@@ -252,7 +261,7 @@
                       selectizeControl.addOption(targetOptions)
                       var selectizeControl1 = $select1[0].selectize;
                       selectizeControl1.addOption(groupOptions)
-
+                      hideSpinner()
                     },
                   });
                 },
@@ -278,7 +287,8 @@
       res = new Map()
       const targetValue = $('#select-tools').text();
       groupValue = $('#select-tools1').text();
-      const uniqueValue = allUniqueValue.get(groupValue);
+      let uniqueValue = allUniqueValue.get(groupValue);
+      uniqueValue = uniqueValue.sort()
 
       let targetArray = new Map();
       let targetPatient = new Map();
@@ -355,7 +365,22 @@
               text: groupValue,
             }
           },
+          annotations: [
+            {
+              x: 0.01, // 相对于图表宽度的位置
+              y: 1.0, // 相对于图表高度的位置
+              xref: 'paper', // x 坐标轴的参考设置为 'paper'
+              yref: 'paper', // y 坐标轴的参考设置为 'paper'
+              text: 'p-value: 0.05', // 要显示的文本
+              showarrow: false, // 是否显示箭头指向注释
+              font: {
+                size: 12
+              }
+            }
+          ]
         };
+        // pValue=anova(value)
+        // console.log(pValue)
         Plotly.newPlot("myDiv" + index, res.get(value), layout);
       })
     }
