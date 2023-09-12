@@ -16,7 +16,7 @@
                 </th>
                 <th style="width: 7%;">
                     <div class="btn-toolbar">
-                        <input type="button" id="selectBtn" class="btn btn-primary" value="Apply" style="width: 90%;margin-right:5px;"/>
+                        <input type="button" id="ImmuneSelectBtn" class="btn btn-primary" value="Apply" style="width: 90%;margin-right:5px;"/>
                     </div>
                 </th>
             </tr>
@@ -78,7 +78,7 @@
       }
       });
   
-      $('#selectBtn').click(function(){
+      $('#ImmuneSelectBtn').click(function(){
   
         var subDataArray=[]
         var subUniprotArray=[]
@@ -135,26 +135,30 @@
       $('#helpBtn').click(function(){
         alert("개발중....")
       });
+
+      $('#ImmuneHeatmapDiv').mouseup(function(event){
+        if(event.currentTarget.className == 'morpheus'){
+          if ( immunMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
+            var index = immunMorpheus.project.hoverRowIndex
+            var gene = subGenArray[index]
+            var link = ""
+            $.each(linkArray,function(m,y){
+              if(gene==y.split('=')[0]){
+                link = y.split('=')[1]
+                return;
+              }
+            });
+            if(link!='X'){
+              window.open('https://www.uniprot.org/uniprotkb/'+link+'/entry', '_blank');
+            }
+          }
+
+          immunMorpheus.selectedRowTrackName = ''
+        }
+      })
   
     });
 
-    document.addEventListener('mouseup', function() {
-    
-    if (immunMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
-      var index = immunMorpheus.project.hoverRowIndex
-      var gene = subGenArray[index]
-      var link = ""
-      $.each(linkArray,function(m,y){
-        if(gene==y.split('=')[0]){
-          link = y.split('=')[1]
-          return;
-        }
-      });
-      if(link!='X'){
-        window.open('https://www.uniprot.org/uniprotkb/'+link+'/entry', '_blank');
-      }
-    }
-    });
   
     function getNmfData(nmfData){
   
