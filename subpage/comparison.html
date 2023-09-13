@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -12,7 +11,7 @@
   .container1 {
     display: flex;
     flex-direction: column;
-    height: 76vh;
+    height: 84vh;
   }
 
   .box1,
@@ -31,7 +30,7 @@
 
   .char-div {
     width: 50%;
-    height: 38vh;
+    height: 42vh;
   }
 </style>
 
@@ -81,11 +80,6 @@
 
 
   <script>
-
-
-
-
-
 
     var preBtn = $("#pre-btn")
     preBtn.prop("disabled", true)
@@ -146,6 +140,10 @@
       allUniqueValue.delete('Sample.ID');
       allUniqueValue.delete('Subtype Membership');
       allUniqueValue.delete('Age');
+      allUniqueValue.forEach((value, key) => {
+        if (key !== "Other Oncogene Alteration") allUniqueValue.set(key, value.slice(0, value.length - 1))
+      })
+      // console.log(allUniqueValue)
       //get patientInfo
       for (let i = 1; i < patientData[0].split(",").length; i++) {
         patientInfo.push(new PatientMetaData());
@@ -285,6 +283,7 @@
     var groupValue = ""
     $("#apply-btn").click(function () {
       res = new Map()
+      page = 0
       const targetValue = $('#select-tools').text();
       groupValue = $('#select-tools1').text();
       let uniqueValue = allUniqueValue.get(groupValue);
@@ -301,12 +300,12 @@
         targetPatient.set(targetValue, proteinPatient)
       }
       for (const [key, value] of allAcetlysite) {
-        if (key.indexOf(targetValue) === -1) continue;
+        if (key.split("_")[0] !== targetValue) continue;
         targetArray.set(key, value)
         targetPatient.set(key, acetlysitePatient)
       }
       for (const [key, value] of allPhosphosite) {
-        if (key.indexOf(targetValue) === -1) continue;
+        if (key.split("_")[0] !== targetValue) continue;
         targetArray.set(key, value)
         targetPatient.set(key, phosphositePatient)
       }
@@ -358,6 +357,17 @@
       let start = page * 4
       allKeys = allKeys.slice(start, start + 4)
       allKeys.forEach((value, index) => {
+        let data = res.get(value)
+        let pValue = 0
+        let pText = ""
+        if (data.length > 2) pValue = anova(data)
+        else pValue = twoSampleTTest(data)
+        if (pValue < 0.05) {
+          pText = "p < 0.05"
+        } else {
+          console.log(pValue,parseFloat(pValue.toFixed(2)))
+          pText = "p = " + parseFloat(pValue.toFixed(2));
+        }
         var layout = {
           title: value,
           xaxis: {
@@ -368,10 +378,10 @@
           annotations: [
             {
               x: 0.01, // 相对于图表宽度的位置
-              y: 1.0, // 相对于图表高度的位置
+              y: 1.1, // 相对于图表高度的位置
               xref: 'paper', // x 坐标轴的参考设置为 'paper'
               yref: 'paper', // y 坐标轴的参考设置为 'paper'
-              text: 'p-value: 0.05', // 要显示的文本
+              text: pText, // 要显示的文本
               showarrow: false, // 是否显示箭头指向注释
               font: {
                 size: 12
@@ -379,9 +389,8 @@
             }
           ]
         };
-        // pValue=anova(value)
-        // console.log(pValue)
-        Plotly.newPlot("myDiv" + index, res.get(value), layout);
+
+        Plotly.newPlot("myDiv" + index, data, layout);
       })
     }
     preBtn.click(function () {
@@ -394,7 +403,80 @@
       draw(res)
     })
 
+
+    function twoSampleTTest(data) {
+      // 使用 map 获取所有的 y 数组
+      let yArrays = data.map(item => item.y);
+
+      const mean1 = math.mean(yArrays[0]);
+      const mean2 = math.mean(yArrays[1]);
+      const var1 = math.variance(yArrays[0]);
+      const var2 = math.variance(yArrays[1]);
+      const n1 = yArrays[0].length;
+      const n2 = yArrays[1].length;
+
+      const pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
+      const tStat = (mean1 - mean2) / Math.sqrt(pooledVar * (1 / n1 + 1 / n2));
+
+      const df = n1 + n2 - 2;
+      const pValue = 2 * (1 - jStat.studentt.cdf(Math.abs(tStat), df));
+
+      return pValue
+    }
+
+
+    var factor = Math.pow(10, 9)
+    function anova(data) {
+
+      // 使用 map 获取所有的 y 数组
+      let yArrays = data.map(item => item.y);
+
+      yArrays.forEach((y, i) => {
+        y.forEach((value, index) => {
+          y[index] = value * factor
+        });
+      });
+
+      // 使用 concat 和 spread 运算符来合并这些数组
+      let concatenatedY = [].concat(...yArrays);
+
+      // 计算总体均值 (Grand Mean)
+      // jStat.mean([1,2,3])
+      const yMean = jStat.mean(concatenatedY);
+
+      // 计算组间平方和 (SSB) 和组间自由度 (dfB)
+      let ssb = 0;
+      const yMeans = yArrays.map(y => jStat.mean(y));
+      yArrays.forEach((y, i) => {
+        ssb += y.length * Math.pow(yMeans[i] - yMean, 2);
+      });
+      const dfB = yArrays.length - 1;
+
+
+      // 计算组内平方和 (SSW) 和组内自由度 (dfW)
+      let ssw = 0;
+      yArrays.forEach((y, i) => {
+        y.forEach(value => {
+          ssw += Math.pow(value - yMeans[i], 2);
+        });
+      });
+      const dfW = concatenatedY.length - yArrays.length;
+
+
+      // 计算 F-统计量
+      const fStat = (ssb / dfB) / (ssw / dfW);
+
+      // 计算 p-值
+      const pValue = 1 - jStat.centralF.cdf(fStat, dfB, dfW);
+
+
+      return pValue;
+    }
   </script>
+</body>
+
+</html>
+</script>
 </body>
 
 </html>
