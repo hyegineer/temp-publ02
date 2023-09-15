@@ -26,6 +26,7 @@
       cache: false,
       success: function (data) {
         data = data.split("\n");
+        let seqPateint = data[0].split(",").slice(2)
         let rows = data.slice(1).map((row) => row.split(","));
         rows.map((row) => {
           rowHeader.push(row[0])
@@ -34,11 +35,17 @@
           matrix.push(row.slice(2))
         });
         data = metaArray;
+        rows = data.map((row) => row.split(","));
+        rows = dataToArray(rows)
+        let tempRows = rows.slice(1)
+        tempRows = tempRows.filter((row) => seqPateint.includes(row[0]))
+        rows = rows.slice(0, 1)
+        tempRows.forEach(element => rows.push(element));
+        rows = dataToArray(rows)
         const patientHeader = []
-        data.map((row) => {
-          const rowData = row.split(",");
-          patientHeader.push(rowData[0])
-          patientData.push(rowData.slice(1))
+        rows.map((row) => {
+          patientHeader.push(row[0])
+          patientData.push(row.slice(1))
         });
         for (let i = 0; i < patientHeader.length; i++) {
           metaData.push({
@@ -46,24 +53,39 @@
             array: patientData[i]
           })
         }
-        drawHeatMap(matrix, rowHeader);
+        drawHeatMap();
       },
     });
 
 
+    function dataToArray(array) {
+      const rows = array.length;
+      const cols = array[0].length;
+      const transposed = [];
+      for (let col = 0; col < cols; col++) {
+        const newRow = [];
+        for (let row = 0; row < rows; row++) {
+          newRow.push(array[row][col]);
+        }
+        transposed.push(newRow);
+      }
+      return transposed;
+    }
+
+
     //draw
-    function drawHeatMap(data, protiens) {
+    function drawHeatMap() {
       let json = {
-        rows: protiens.length,
+        rows: rowHeader.length,
         columns: patientData[0].length,
-        seriesArrays: [data],
+        seriesArrays: [matrix],
         seriesDataTypes: ["Float32"],
         seriesNames: ["Protein"],
         rowMetadataModel: {
           vectors: [
             {
               name: "Protein",
-              array: protiens,
+              array: rowHeader,
             },
           ],
         },

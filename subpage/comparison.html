@@ -140,7 +140,6 @@
       allUniqueValue.delete('Sample.ID');
       allUniqueValue.delete('Subtype Membership');
       allUniqueValue.delete('Age');
-      console.log(allUniqueValue);
       //get patientInfo
       for (let i = 1; i < patientData[0].split(",").length; i++) {
         patientInfo.push(new PatientMetaData());
@@ -285,7 +284,6 @@
       groupValue = $('#select-tools1').text();
       let uniqueValue = allUniqueValue.get(groupValue);
       uniqueValue = uniqueValue.sort()
-      console.log(uniqueValue)
 
       let targetArray = new Map();
       let targetPatient = new Map();
@@ -423,28 +421,21 @@
     }
 
 
-    var factor = Math.pow(10, 9)
     function anova(data) {
 
       // 使用 map 获取所有的 y 数组
-      let yArrays = data.map(item => item.y.slice());
-
-      yArrays.forEach((y, i) => {
-        y.forEach((value, index) => {
-          y[index] = value * factor
-        });
-      });
+      let yArrays = data.map(item => item.y);
 
       // 使用 concat 和 spread 运算符来合并这些数组
       let concatenatedY = [].concat(...yArrays);
 
       // 计算总体均值 (Grand Mean)
       // jStat.mean([1,2,3])
-      const yMean = jStat.mean(concatenatedY);
+      const yMean = math.mean(concatenatedY);
 
       // 计算组间平方和 (SSB) 和组间自由度 (dfB)
       let ssb = 0;
-      const yMeans = yArrays.map(y => jStat.mean(y));
+      const yMeans = yArrays.map(y => math.mean(y));
       yArrays.forEach((y, i) => {
         ssb += y.length * Math.pow(yMeans[i] - yMean, 2);
       });
