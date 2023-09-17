@@ -16,6 +16,7 @@ function hideSpinner() {
 function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArray,linkArray){
 
   var patientTmp = []
+  var subPatient = []
 
   //debugger;
 
@@ -27,9 +28,21 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
       var paiTmp = patientsArray[j].substr(0,patientsArray[j].length-1)+'T';
       if(tmpArray.indexOf(paiTmp)>-1){
         patientTmp.push(tmpArray.indexOf(paiTmp));
+        subPatient.push(patientsArray[j])
       }
     }
   }
+
+  var finalDataArray = [];
+  for(var i = 0; i<dataArray.length;i++){
+    var tmp = dataArray[i];
+    var fArray = []
+    for(var j=0;j<patientTmp.length;j++){
+      fArray.push(tmp[patientTmp[j]])
+    }
+    finalDataArray.push(fArray)
+  }
+
 
   var metaList = []
   if(metaArray !=null && metaArray.length > 0){
@@ -44,9 +57,9 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
           if(colValue=='Sample.ID'){
             metaList.push({
               'name':colValue,
-              'array':patientsArray
+              'array':subPatient
             })
-          }else{
+          } else{
             metaList.push({
               'name':colValue,
               'array':putArray
@@ -61,8 +74,8 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
 
   var json = {
     "rows": uniprotIdArray.length,
-    "columns": patientsArray.length,
-    "seriesArrays": [dataArray],
+    "columns": subPatient.length,
+    "seriesArrays": [finalDataArray],
     "seriesDataTypes": ["Float32"],
     "seriesNames": ["NMF"],
     "rowMetadataModel": {
@@ -77,12 +90,15 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
     "columnMetadataModel": nmfMetaObj
   }
 
+  var columnColorMap = getColumnColorModel(metaList);
+  //debugger
+
   var comMorpheus = new morpheus.HeatMap({
     el: $('#'+heatMapDiv),
     dataset: morpheus.Dataset.fromJSON(json),
     colorScheme: { // optional color scheme. default is relative
       type: 'fixed',
-      map: [{
+      /*map: [{
         value: -12,
         color: '#0000ff'
       }, {
@@ -91,14 +107,15 @@ function paintHeatMap(uniprotIdArray,patientsArray,dataArray,heatMapDiv,metaArra
       }, {
         value: 12,
         color: '#ff0000'
-      }]
+      }]*/
     },
     //showRowNumber: true,
     tools: [{ // optional tools to run at load time
       //name: 'Hierarchical Clustering',
       //params: {cluster: 'Rows and columns'}
     }],
-    menu:toolbarMenu
+    menu:toolbarMenu,
+    columnColorModel:columnColorMap
   });
 
   return comMorpheus;
@@ -130,6 +147,69 @@ function DrawLegendPopup(colorMap){
       });
       substr += "</table></td>";
       if(i%8==0){
+        htmlStr +="</tr><tr>";
+        htmlStr += substr;
+        substr = "";
+        htmlStr +="</tr><tr>";
+      }
+      i++;
+  });
+  htmlStr += substr;
+  htmlStr += "</tr><tr></table></div>";
+
+  myPopup.document.write(htmlStr);
+  myPopup.focus()   
+}
+
+function ImmuneDrawLegendPopup(colorMap){
+  
+  debugger
+  if(myPopup!=null){
+    myPopup.close();
+  }
+  
+  myPopup = window.open('', 'Legend', 'height=600, width=1200, scrollbars=yes');
+  var htmlStr="<div><table><tr>";
+  var substr="";
+  var i = 1;
+  $.map(colorMap, function(k, v){
+      htmlStr += "<td style='text-align: center;'>"+k.key+"</td>";
+      var colo = immuneMetaGradientName[k.key];
+      var newArr = $.map(k.value,function(key,value){return key});
+      var subArr = $.map(newArr[0],function(key,value){return key});
+      if(colo!=null && colo!="" && colo!=undefined){
+        substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;width:83%'>";
+        substr += "<tr><td style='height: fit-content;'>"
+        switch(colo){
+          case "green":
+            substr += "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#006030);'></div></tr>";
+            break;
+          case "yellow":
+            substr += "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#fbc504);'></div></tr>";
+            break
+            case "red":
+            substr += "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#be0202);'></div></tr>";
+            break;
+          case "orange":
+            substr += "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#fb9804);'></div></tr>";
+            break;
+          case "blue":
+            substr += "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#0202f7);'></div></tr>";
+            break;
+        }
+        substr += "<tr><td><span style='font-size:13px;float:left'>"+subArr[0].key+"</span><span style='font-size:13px;float:right'>"+subArr[subArr.length-1].key+"</span></td></tr>";
+        substr += "</table></td>";
+
+      } else{       
+        substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;'>";
+        $.map(subArr,function(key,value){        
+            substr += "<tr><td bgcolor='"+key.value+"' height='15' width='15'></td>"+
+            "<td>"+key.key+"</td></tr>";
+        });
+        substr += "</table></td>";
+      }
+      
+      if(i%8==0||i==23){
         htmlStr +="</tr><tr>";
         htmlStr += substr;
         substr = "";
@@ -233,4 +313,78 @@ function getUniprotIDList(geneList){
   }
 
   return uniprotIdArray
+}
+
+
+
+//////////////// 색상 gradient ////////////////
+function getColumnColorModel(metaList){
+
+  //debugger
+  let returnMap = {};
+  for(var i =0;i<metaList.length;i++){
+    var tmp = metaList[i];
+    var colo = immuneMetaGradientName[tmp['name']];
+    if(colo!=null && colo!="" && colo!=undefined){
+      var tmpMap = {};
+      var valueList = tmp['array'].map(x => parseFloat(x.trim()).toFixed(3)).sort(ascOrder);
+      var colorList = []
+      switch(colo){
+        case "green":
+          colorList = gradient('#FFFFFF','#006030',valueList.length)
+          break;
+        case "yellow":
+          colorList = gradient('#FFFFFF','#fbc504',valueList.length)
+          break;
+        case "red":
+          colorList = gradient('#FFFFFF','#be0202',valueList.length)
+          break;
+        case "orange":
+          colorList = gradient('#FFFFFF','#fb9804',valueList.length)
+          break;
+        case "blue":
+          colorList = gradient('#FFFFFF','#0202f7',valueList.length)
+          break;
+      }
+      $.each(valueList,function(i,v){
+        tmpMap[v]=colorList[i]
+      });
+      returnMap[tmp['name']]=tmpMap;
+    }
+  }
+  return returnMap;
+}
+
+function ascOrder (a, b) {
+  return a - b
+}
+
+function rgbToHex(r, g, b){
+  var hex = ((r << 16) | (g << 8) | b).toString(16);
+  return "#" + new Array(Math.abs(hex.length - 7)).join("0") + hex;
+}
+// hex to rgb
+function hexToRgb(hex){
+   var rgb = [];
+   for (var i = 1; i < 7; i += 2){
+      rgb.push(parseInt("0x" + hex.slice(i, i + 2)));
+   }
+   return rgb;
+}
+
+function gradient(startColor, endColor, step){
+  
+   var sColor = hexToRgb(startColor),
+   eColor = hexToRgb(endColor);
+
+  
+  var rStep = (eColor[0] - sColor[0]) / step,
+      gStep = (eColor[1] - sColor[1]) / step,
+      bStep = (eColor[2] - sColor[2]) / step;
+
+  var gradientColorArr = [];
+  for (var i = 0;i < step;i++){
+      gradientColorArr.push(rgbToHex(parseInt(rStep * i + sColor[0]), parseInt(gStep * i + sColor[1]), parseInt(bStep * i + sColor[2])));
+  }
+  return gradientColorArr;
 }
