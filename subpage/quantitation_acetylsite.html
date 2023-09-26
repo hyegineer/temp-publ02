@@ -16,6 +16,7 @@
 
     var matrix = []
     var rowHeader = []
+    var link = []
     var metaData = []
     var patientData = []
 
@@ -30,6 +31,7 @@
         let rows = data.slice(1).map((row) => row.split(","));
         rows.map((row) => {
           rowHeader.push(row[0])
+          link.push(row[1])
         });
         rows.map((row) => {
           matrix.push(row.slice(3))
@@ -84,6 +86,10 @@
             {
               name: "acetylsite",
               array: rowHeader,
+            },
+            {
+              name: "link",
+              array: link,
             },
           ],
         },

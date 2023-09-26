@@ -356,12 +356,13 @@
         let data = res.get(value)
         let pValue = 0
         let pText = ""
-        if (data.length > 2) pValue = anova(data)
-        else pValue = twoSampleTTest(data)
-        if (pValue < 0.05) {
-          pText = "p < 0.05"
+        if (data.length > 2) pValue = kruskalWallisTest(data)
+        else pValue = wilcoxonRankSumTest(data)
+        if (pValue < 0.01) {
+          console.log(pValue)
+          pText = "p < 0.01"
         } else {
-          console.log(pValue,parseFloat(pValue.toFixed(2)))
+          // console.log(pValue, parseFloat(pValue.toFixed(2)))
           pText = "p = " + parseFloat(pValue.toFixed(2));
         }
         var layout = {
@@ -400,24 +401,51 @@
     })
 
 
-    function twoSampleTTest(data) {
+    function wilcoxonRankSumTest(data) {
       // 使用 map 获取所有的 y 数组
       let yArrays = data.map(item => item.y);
 
-      const mean1 = math.mean(yArrays[0]);
-      const mean2 = math.mean(yArrays[1]);
-      const var1 = math.variance(yArrays[0]);
-      const var2 = math.variance(yArrays[1]);
-      const n1 = yArrays[0].length;
-      const n2 = yArrays[1].length;
+      // 合并两组数据
+      let combinedData = [].concat(...yArrays);
 
-      const pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
-      const tStat = (mean1 - mean2) / Math.sqrt(pooledVar * (1 / n1 + 1 / n2));
+      // 对合并后的数据进行排序
+      combinedData.sort((a, b) => a - b);
 
-      const df = n1 + n2 - 2;
-      const pValue = 2 * (1 - jStat.studentt.cdf(Math.abs(tStat), df));
+      // 将数据分成两组，每组对应不同的样本
+      let group1 = yArrays[0];
+      let group2 = yArrays[1];
 
-      return pValue
+      // 计算秩和
+      let rankSum1 = 0;
+      for (let i = 0; i < group1.length; i++) {
+        rankSum1 += combinedData.indexOf(group1[i]) + 1;
+      }
+
+      let rankSum2 = 0;
+      for (let i = 0; i < group2.length; i++) {
+        rankSum2 += combinedData.indexOf(group2[i]) + 1;
+      }
+
+      // 计算 U 统计量
+      let n1 = group1.length;
+      let n2 = group2.length;
+      let U1 = rankSum1 - (n1 * (n1 + 1)) / 2;
+      let U2 = rankSum2 - (n2 * (n2 + 1)) / 2;
+
+      // 计算较小的 U 统计量
+      let U = Math.min(U1, U2);
+
+      // 计算期望值和方差
+      let expectedValue = (n1 * n2) / 2;
+      let variance = (n1 * n2 * (n1 + n2 + 1)) / 12;
+
+      // 计算 Z 统计量
+      let zStat = (U - expectedValue) / Math.sqrt(variance);
+
+      // 计算 p 值
+      let pValue = jStat.normal.cdf(zStat, 0, 1);
+
+      return pValue * 2; // 乘以2以获得双尾检验的p值
     }
 
 
@@ -461,6 +489,56 @@
 
       return pValue;
     }
+
+    function kruskalWallisTest(data) {
+      // 使用 map 获取所有的 y 数组
+      let yArrays = data.map(item => item.y);
+
+      let allData = [];
+
+      for (let i = 0; i < yArrays.length; i++) {
+        allData = allData.concat(yArrays[i]);
+      }
+      
+      // console.log(allData);
+      const ranks = jStat.rank(allData);
+      // console.log(ranks);
+      const n = allData.length;
+
+      let sumRanks = [];
+
+      for (let i = 0; i < yArrays.length; i++) {
+        let rankSum = 0;
+
+        for (let j = 0; j < yArrays[i].length; j++) {
+          rankSum += ranks.shift();
+        }
+
+        sumRanks.push(rankSum);
+      }
+      // H = (12 / (N(N + 1))) * Σ(R^2 / ni) - 3(N + 1)
+
+      let reducedSum = 0
+      for (let i = 0; i < yArrays.length; i++) {
+        reducedSum += Math.pow(sumRanks[i], 2) / yArrays[i].length
+      }
+
+      const hStat = (12 / (n * (n + 1))) * reducedSum - 3 * (n + 1);
+
+      const df = yArrays.length - 1;
+
+      // 计算卡方分布的p值（使用逆变换函数）
+      const pValue = 1 - jStat.chisquare.cdf(hStat, df);
+
+      return pValue;
+    }
+
+
+
+
+
+
+
   </script>
 </body>
 
