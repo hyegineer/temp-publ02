@@ -163,7 +163,7 @@ function DrawLegendPopup(colorMap){
 
 function ImmuneDrawLegendPopup(colorMap){
   
-  debugger
+  
   if(myPopup!=null){
     myPopup.close();
   }
