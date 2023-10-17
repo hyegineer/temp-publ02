@@ -37,11 +37,11 @@
 </div>
 <style type="text/css">
   .nmfContainer{
-    width: 17%;border-radius: 0 15px 15px 0;height: 57%;
-    background: #f2f5fb;position: absolute; top: 50px;right: -17%;z-index: 999;
+    width: 26rem;border-radius: 0 15px 15px 0;height: 44rem;
+    background: #f2f5fb;position: absolute; top: 50px;right: -26rem;z-index: 999;
   }
  .nmfContainer span{display: block; background: #008fd8;width: 45px;
-    border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:18%;
+    border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
     position: relative;z-index: 999;}
 </style>
 <script type="text/javascript">
@@ -68,13 +68,10 @@ var flagNav = true;
         NmfLayer();
       } else{
         $('#nmfFloatContainer').empty();
-        $('.nmfContainer').animate({right:'-17%'});
+        $('.nmfContainer').animate({right:'-26rem'});
         flagNav = true;
       }
      });
-     
-
-    $('#nmfLegendDiv').addClass("hide");
 
     $.ajax({
       type:"GET",    
@@ -178,8 +175,7 @@ var flagNav = true;
   function NmfLayer(){
     //debugger;
     var colorMap = nmfMorpheus.project.columnColorModel.vectorNameToColorMap.map;
-    var htmlStr="<table style='font-size: 10px;'><tr>";
-    //var htmlStr="<ul><li style='list-style: none;'>";
+    var htmlStr="<div style='height: 5px;'></div><table style='font-size: 10px;'><tr>";
     var substr="";
     var i = 1;
     $.map(colorMap, function(k, v){

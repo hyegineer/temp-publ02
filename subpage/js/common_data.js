@@ -136,21 +136,21 @@ class PatientMetaData {
 }
 
 var immuneMetaGradientName = {
-  'CD8 T cells':'green',
+  'CD8 T cells':'yellow',
   'CD4 T cells':'yellow',
-  'Tregs':'red',
-  'B cells':'blue',
-  'NK cells':'orange',
-  'Neutrophils':'green',
+  'Tregs':'yellow',
+  'B cells':'yellow',
+  'NK cells':'yellow',
+  'Neutrophils':'yellow',
   'DC':'yellow',
-  'Monocytes':'red',
-  'Macrophages':'blue',
-  'Epithelial cells':'orange',
+  'Monocytes':'yellow',
+  'Macrophages':'yellow',
+  'Epithelial cells':'yellow',
   'Recognition of tumor cells':'green',
-  'Trafficking and infiltration':'yellow',
-  'Checkpoint expression':'red',
-  'Inhibitor cells':'blue',
-  'Priming and activation':'orange',
+  'Trafficking and infiltration':'green',
+  'Checkpoint expression':'green',
+  'Inhibitor cells':'green',
+  'Priming and activation':'green',
   'T cell immunity':'green',
-  'Inhibitory molecules':'yellow'
+  'Inhibitory molecules':'green'
 }
