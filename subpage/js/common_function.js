@@ -322,36 +322,46 @@ function getColumnColorModel(metaList){
 
   //debugger
   let returnMap = {};
+
+  var yelloList = []
+  var greenList = []
+
   for(var i =0;i<metaList.length;i++){
     var tmp = metaList[i];
     var colo = immuneMetaGradientName[tmp['name']];
-    if(colo!=null && colo!="" && colo!=undefined){
-      var tmpMap = {};
-      var valueList = tmp['array'].map(x => parseFloat(x.trim()).toFixed(3)).sort(ascOrder);
-      var colorList = []
-      switch(colo){
-        case "green":
-          colorList = gradient('#FFFFFF','#006030',valueList.length)
-          break;
-        case "yellow":
-          colorList = gradient('#FFFFFF','#fbc504',valueList.length)
-          break;
-        case "red":
-          colorList = gradient('#FFFFFF','#be0202',valueList.length)
-          break;
-        case "orange":
-          colorList = gradient('#FFFFFF','#fb9804',valueList.length)
-          break;
-        case "blue":
-          colorList = gradient('#FFFFFF','#0202f7',valueList.length)
-          break;
-      }
-      $.each(valueList,function(i,v){
-        tmpMap[v]=colorList[i]
-      });
-      returnMap[tmp['name']]=tmpMap;
+
+    if(colo == 'yellow'){
+      yelloList = yelloList.concat(tmp['array'])
+    } else if(colo == 'green'){
+      greenList = greenList.concat(tmp['array'])
     }
   }
+
+  var yellowSortList = yelloList.map(x => parseFloat(x.trim()).toFixed(3)).sort(ascOrder);
+  var greenSortList = greenList.map(x => parseFloat(x.trim()).toFixed(3)).sort(ascOrder);
+
+  var yellowColorList = gradient('#FFFFFF','#006030',yellowSortList.length);
+  var greenColorList = gradient('#FFFFFF','#fbc504',greenSortList.length);
+
+  for(var i =0;i<metaList.length;i++){
+    var tmp = metaList[i];
+    var tmpMap = {};
+    var colo = immuneMetaGradientName[tmp['name']];
+    if(colo == 'yellow'){
+      $.each(tmp['array'],function(i,v){
+        var index = yellowSortList.indexOf(v);
+        tmpMap[v]=yellowColorList[index]
+      })
+    } else if(colo == 'green'){
+      $.each(tmp['array'],function(i,v){
+        var index = greenSortList.indexOf(v);
+        tmpMap[v]=greenColorList[index]
+      })
+    }
+
+    returnMap[tmp['name']]=tmpMap;
+  }
+
   return returnMap;
 }
 

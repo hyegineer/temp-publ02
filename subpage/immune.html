@@ -38,8 +38,8 @@
 
 <style type="text/css">
   .ImmuneContainer{
-    width: 26rem;border-radius: 0 15px 15px 0;height: 51rem;
-    background: #f2f5fb;position: absolute; top: 50px;right: -26rem;z-index: 999;
+    width: 25rem;border-radius: 0 15px 15px 0;height: 33rem;
+    background: #f2f5fb;position: absolute; top: 235px;right: -25rem;z-index: 999;
   }
  .ImmuneContainer span{display: block; background: #008fd8;width: 45px;
     border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
@@ -71,7 +71,7 @@ var flagNav = true;
         ImmunLayer();
       } else{
         $('#ImmuneFloatContainer').empty();
-        $('.ImmuneContainer').animate({right:'-26rem'});
+        $('.ImmuneContainer').animate({right:'-25rem'});
         flagNav = true;
       }
      });
@@ -222,19 +222,25 @@ var flagNav = true;
       });
       htmlStr += substr;
       htmlStr += "</tr><tr>";
+
       htmlStr += "<td style='text-align: center;'>Cell type enrichment score</td>";
       htmlStr += "<td style='height: fit-content;'>" +
-        "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#fbc504);'></div></tr>" ;
+        "<table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;font-size: 10px;'><tr><td>"+
+        "<div style='height:20px;width:100px;margin:auto; background : linear-gradient(to right,#FFFFFF,#006030);'></div>"+
+        "</td></tr><tr><td><div style='float: left;margin-left:2px'>-4</div><div style='float:left;margin-left: 37px;'>0</div><div style='float:right;margin-right:2px'>4</div></td></tr></table>"+
+        "<div style='height: 5px;'></div></tr>" ;
 
       htmlStr += "<tr>" + "<td style='text-align: center;'>Pathway enrichment score</td>"
       htmlStr += "<td style='height: fit-content;'>" +
-          "<div style='height:20px;margin:auto; background : linear-gradient(to right,#FFFFFF,#006030);'></div></tr>" ; 
-        htmlStr += "</table><div style='height: 5px;'></div></td></tr>";
-        
-      htmlStr +="</table>";
+        "<table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;font-size: 10px;'><tr><td>"+
+        "<div style='height:20px;width:100px;margin:auto; background : linear-gradient(to right,#FFFFFF,#fbc504);'></div>"+
+        "</td></tr><tr><td><div style='float: left;margin-left:2px'>0</div><div style='float:left;margin-left: 38px;'>3</div><div style='float:right;margin-right:2px'>6</div></td></tr></table>"+
+        "<div style='height: 5px;'></div></tr>" ;
+
+      htmlStr += "</table><div style='height: 5px;'></div></td></tr></table>";
 
     $('#ImmuneFloatContainer').append(htmlStr);
-
+    
   }
 
 
