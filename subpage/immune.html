@@ -38,8 +38,8 @@
 
 <style type="text/css">
   .ImmuneContainer{
-    width: 25rem;border-radius: 0 15px 15px 0;height: 33rem;
-    background: #f2f5fb;position: absolute; top: 235px;right: -25rem;z-index: 999;
+    width: 0px;border-radius: 0 15px 15px 0;height: 33rem;
+    background: #f2f5fb;position: absolute; top: 235px;right: 0rem;z-index: 999;
   }
  .ImmuneContainer span{display: block; background: #008fd8;width: 45px;
     border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
@@ -67,11 +67,13 @@ var flagNav = true;
       if(flagNav){
         
         $('.ImmuneContainer').animate({right:'0px'});
+        $('.ImmuneContainer').css({width:'24rem'});
         flagNav = false;
         ImmunLayer();
       } else{
         $('#ImmuneFloatContainer').empty();
-        $('.ImmuneContainer').animate({right:'-25rem'});
+        //$('.ImmuneContainer').animate({right:'-24rem'});
+        $('.ImmuneContainer').css({width:'0px'});
         flagNav = true;
       }
      });
@@ -195,9 +197,9 @@ var flagNav = true;
     var htmlStr="<div style='height: 5px;'></div><table style='font-size: 10px;'><tr>";
       var substr="";
       var i = 1;
-      debugger;
+      //debugger;
       $.map(colorMap, function(k, v){
-          
+        if(k.key !="Sample.ID"){
           var colo = immuneMetaGradientName[k.key];
           var newArr = $.map(k.value,function(key,value){return key});
           var subArr = $.map(newArr[0],function(key,value){return key});
@@ -218,7 +220,7 @@ var flagNav = true;
             }
             i++;
           }
-          
+        }
       });
       htmlStr += substr;
       htmlStr += "</tr><tr>";

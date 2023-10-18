@@ -37,8 +37,8 @@
 </div>
 <style type="text/css">
   .nmfContainer{
-    width: 25rem;border-radius: 0 15px 15px 0;height: 25rem;
-    background: #f2f5fb;position: absolute; top: 235px;right: -25rem;z-index: 999;
+    width:0px;border-radius: 0 15px 15px 0;height: 25rem;
+    background: #f2f5fb;position: absolute; top: 235px;right: 0rem;z-index: 999;
   }
  .nmfContainer span{display: block; background: #008fd8;width: 45px;
     border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
@@ -64,11 +64,13 @@ var flagNav = true;
       if(flagNav){
         
         $('.nmfContainer').animate({right:'0px'});
+        $('.nmfContainer').css({width:'24rem'});
         flagNav = false;
         NmfLayer();
       } else{
         $('#nmfFloatContainer').empty();
-        $('.nmfContainer').animate({right:'-25rem'});
+        //$('.nmfContainer').animate({right:'-24rem'});
+        $('.nmfContainer').css({width:'0px'});
         flagNav = true;
       }
      });
@@ -179,21 +181,24 @@ var flagNav = true;
     var substr="";
     var i = 1;
     $.map(colorMap, function(k, v){
-        htmlStr += "<td style='text-align: center;'>"+k.key+"</td>";
-        var newArr = $.map(k.value,function(key,value){return key});
-        var subArr = $.map(newArr[0],function(key,value){return key});
-        substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;font-size: 10px;'>";
-        $.map(subArr,function(key,value){
-          substr += "<tr><td bgcolor='"+key.value+"' height='15' width='15'></td>"+
-            "<td>"+key.key+"</td></tr>";
-        });
-        substr += "</table><div style='height: 5px;'></div></td>";
-        if(i%1==0){
-          htmlStr += substr;
-          htmlStr +="</tr><tr>";
-          substr = "";
+        if(k.key !="Sample.ID"){
+          htmlStr += "<td style='text-align: center;'>"+k.key+"</td>";
+          var newArr = $.map(k.value,function(key,value){return key});
+          var subArr = $.map(newArr[0],function(key,value){return key});
+          substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;font-size: 10px;'>";
+          $.map(subArr,function(key,value){
+            substr += "<tr><td bgcolor='"+key.value+"' height='15' width='15'></td>"+
+              "<td>"+key.key+"</td></tr>";
+          });
+          substr += "</table><div style='height: 5px;'></div></td>";
+          if(i%1==0){
+            htmlStr += substr;
+            htmlStr +="</tr><tr>";
+            substr = "";
+          }
+          i++;
         }
-        i++;
+        
     });
     htmlStr += substr;
     htmlStr += "</tr><tr></table>";
