@@ -14,22 +14,16 @@
     height: 76vh;
   }
 
-  .box1,
-  .box2 {
+  .box {
     flex: 1;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center;
+    align-items: center; */
   }
 
-  .flex-hori {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 
   .char-div {
-    width: 50%;
+    width: 48%;
     height: 38vh;
   }
 </style>
@@ -41,51 +35,33 @@
   <div style="display: flex;margin: auto;">
 
     <div style="display: flex;margin: auto;">
-      <div style="width: 300px;">
+      <div style="width: 250px;">
         <select id="select-tools" multiple placeholder="Target"></select>
       </div>
-      <div style="width: 300px;margin-left: 10px;">
+      <div style="width: 250px;margin-left: 10px;">
         <select id="select-tools1" multiple placeholder="Group by"></select>
       </div>
       <button id="apply-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
         Apply
       </button>
+
+      <div style="width: 120px;margin-left: 10px;">
+        <select id="select-tools2" multiple placeholder="Sort by"></select>
+      </div>
+      <div style="margin: auto;margin-left: 10px ;">
+        <span id="sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true"></span>
+      </div>
     </div>
   </div>
 
   <div class="container1">
-    <div class="box1">
-      <div id="myDiv0" class="char-div"></div>
-      <div id="myDiv1" class="char-div"></div>
-    </div>
-
-    <div class="box2">
-      <div id="myDiv2" class="char-div"></div>
-      <div id="myDiv3" class="char-div"></div>
-    </div>
   </div>
 
-  <div class="flex-hori">
-    <div id="page-index"></div>
-  </div>
 
-  <div class="flex-hori">
-    <button id="pre-btn" type="button" class="btn btn-primary">
-      Pre
-    </button>
-    <button id="next-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
-      Next
-    </button>
-  </div>
 
 
   <script>
 
-    var preBtn = $("#pre-btn")
-    preBtn.prop("disabled", true)
-    var nextBtn = $("#next-btn")
-    nextBtn.prop("disabled", true)
-    var pageIndex = $("#page-index")
 
     var $select = $('#select-tools').selectize({
       plugins: ["remove_button"],
@@ -109,7 +85,38 @@
       create: false
     });
 
+    var $select2 = $('#select-tools2').selectize({
+      plugins: ["remove_button"],
+      maxItems: 1,
+      maxOptions: 2,
+      valueField: 'id',
+      labelField: 'title',
+      searchField: 'title',
+      options: [],
+      create: false
+    });
 
+    var sortOptions = []
+    var selectizeControl2 = $select2[0].selectize;
+    sortOptions.push({ id: 1, title: 'P-Value' })
+    sortOptions.push({ id: 2, title: 'Gene Name' })
+    selectizeControl2.addOption(sortOptions);
+
+    selectizeControl2.on('change', function (value) {
+      if (value[0] === '1') {
+        sortKey = 1
+        draw(res, allLayout, allPvalue)
+      } else if (value[0] === '2') {
+        sortKey = 2
+        draw(res, allLayout, allPvalue)
+      }
+    });
+
+    var sortIcon = $('#sort-icon')
+    sortIcon.click(function () {
+      sortOrder = sortOrder == 1 ? 0 : 1
+      draw(res, allLayout, allPvalue)
+    });
 
     var allUniqueValue = new Map();
     var allPatient = new Map();
@@ -124,6 +131,11 @@
     var patientInfo = [];
     var targetOptions = []
     var index = 1
+    var sortKey = 0
+    var sortOrder = 0
+    var allLayout = new Map()
+    var allPvalue = new Map()
+    var res = new Map()
 
 
 
@@ -273,11 +285,10 @@
       });
     }
 
-    var res = new Map()
     var page = 0
-    var limit = 0
     var groupValue = ""
     $("#apply-btn").click(function () {
+      sortKey = 0
       res = new Map()
       page = 0
       const targetValue = $('#select-tools').text();
@@ -334,202 +345,184 @@
         })
         res.set(curTarget, data)
       }
-      limit = Math.ceil(res.size / 4)
-      draw(res)
+      cal(res)
     })
 
-    function draw(res) {
-      if (res.size !== 0) {
-        pageIndex.text((page + 1) + "/" + limit)
-        if (page === 0) preBtn.prop("disabled", true)
-        else preBtn.prop("disabled", false)
-        if ((page + 1) == limit) nextBtn.prop("disabled", true)
-        else nextBtn.prop("disabled", false)
-      }
-      for (let i = 0; i < 4; i++) {
-        Plotly.purge("myDiv" + i)
-      }
+    function cal(res) {
       let allKeys = Array.from(res.keys())
-      let start = page * 4
-      allKeys = allKeys.slice(start, start + 4)
-      allKeys.forEach((value, index) => {
+      let promises = []
+      allLayout = new Map()
+      allPvalue = new Map()
+
+      for (let i = 0; i < allKeys.length; i++) {
+        let value = allKeys[i]
         let data = res.get(value)
         let pValue = 0
         let pText = ""
-        if (data.length > 2) pValue = kruskalWallisTest(data)
-        else pValue = wilcoxonRankSumTest(data)
-        if (pValue < 0.01) {
-          console.log(pValue)
-          pText = "p < 0.01"
-        } else {
-          // console.log(pValue, parseFloat(pValue.toFixed(2)))
-          pText = "p = " + parseFloat(pValue.toFixed(2));
-        }
-        var layout = {
-          title: value,
-          xaxis: {
-            title: {
-              text: groupValue,
-            }
-          },
-          annotations: [
-            {
-              x: 0.01, // 相对于图表宽度的位置
-              y: 1.1, // 相对于图表高度的位置
-              xref: 'paper', // x 坐标轴的参考设置为 'paper'
-              yref: 'paper', // y 坐标轴的参考设置为 'paper'
-              text: pText, // 要显示的文本
-              showarrow: false, // 是否显示箭头指向注释
-              font: {
-                size: 12
+
+        let promise = computePValue(data).then(result => {
+          pValue = result
+          allPvalue.set(value, pValue)
+          if (pValue < 0.01) {
+            pText = "p < 0.01"
+          } else {
+            pText = "p = " + parseFloat(pValue.toFixed(2))
+          }
+
+          var layout = {
+            title: value,
+            xaxis: {
+              title: {
+                text: groupValue,
               }
-            }
-          ]
-        };
+            },
+            annotations: [
+              {
+                x: 0.01,
+                y: 1.1,
+                xref: 'paper',
+                yref: 'paper',
+                text: pText,
+                showarrow: false,
+                font: {
+                  size: 12
+                }
+              }
+            ]
+          }
 
-        Plotly.newPlot("myDiv" + index, data, layout);
+          allLayout.set(value, layout)
+        })
+
+        promises.push(promise)
+      }
+
+      Promise.all(promises).then(() => {
+        draw(res, allLayout, allPvalue)
       })
-    }
-    preBtn.click(function () {
-      page--;
-      draw(res)
-    })
 
-    nextBtn.click(function () {
-      page++;
-      draw(res)
-    })
-
-
-    function wilcoxonRankSumTest(data) {
-      // 使用 map 获取所有的 y 数组
-      let yArrays = data.map(item => item.y);
-
-      // 合并两组数据
-      let combinedData = [].concat(...yArrays);
-
-      // 对合并后的数据进行排序
-      combinedData.sort((a, b) => a - b);
-
-      // 将数据分成两组，每组对应不同的样本
-      let group1 = yArrays[0];
-      let group2 = yArrays[1];
-
-      // 计算秩和
-      let rankSum1 = 0;
-      for (let i = 0; i < group1.length; i++) {
-        rankSum1 += combinedData.indexOf(group1[i]) + 1;
-      }
-
-      let rankSum2 = 0;
-      for (let i = 0; i < group2.length; i++) {
-        rankSum2 += combinedData.indexOf(group2[i]) + 1;
-      }
-
-      // 计算 U 统计量
-      let n1 = group1.length;
-      let n2 = group2.length;
-      let U1 = rankSum1 - (n1 * (n1 + 1)) / 2;
-      let U2 = rankSum2 - (n2 * (n2 + 1)) / 2;
-
-      // 计算较小的 U 统计量
-      let U = Math.min(U1, U2);
-
-      // 计算期望值和方差
-      let expectedValue = (n1 * n2) / 2;
-      let variance = (n1 * n2 * (n1 + n2 + 1)) / 12;
-
-      // 计算 Z 统计量
-      let zStat = (U - expectedValue) / Math.sqrt(variance);
-
-      // 计算 p 值
-      let pValue = jStat.normal.cdf(zStat, 0, 1);
-
-      return pValue * 2; // 乘以2以获得双尾检验的p值
     }
 
+    function draw(res, allLayout, allPvalue) {
+      $('.container1').empty();
+      let boxIndex = 0
+      let allKeys = Array.from(res.keys())
+      console.log(sortKey)
+      if (sortKey === 2) {
+        // 字典序排序
+        if (sortOrder === 0) {
+          allKeys.sort()
+        } else {
+          allKeys.sort(function (a, b) { return b.localeCompare(a) })
+        }
 
-    function anova(data) {
+      } else if (sortKey === 1) {
+        //p值排序
+        let mapEntry = Array.from(allPvalue)
+        if (sortOrder === 0) {
+          mapEntry.sort(function (a, b) {
+            return a[1] - b[1]
+          })
+        } else {
+          mapEntry.sort(function (a, b) {
+            return b[1] - a[1]
+          })
+        }
+        let sortedPvalue = new Map(mapEntry)
 
-      // 使用 map 获取所有的 y 数组
-      let yArrays = data.map(item => item.y);
-
-      // 使用 concat 和 spread 运算符来合并这些数组
-      let concatenatedY = [].concat(...yArrays);
-
-      // 计算总体均值 (Grand Mean)
-      // jStat.mean([1,2,3])
-      const yMean = math.mean(concatenatedY);
-
-      // 计算组间平方和 (SSB) 和组间自由度 (dfB)
-      let ssb = 0;
-      const yMeans = yArrays.map(y => math.mean(y));
-      yArrays.forEach((y, i) => {
-        ssb += y.length * Math.pow(yMeans[i] - yMean, 2);
-      });
-      const dfB = yArrays.length - 1;
+        allKeys = Array.from(sortedPvalue.keys())
+      }
 
 
-      // 计算组内平方和 (SSW) 和组内自由度 (dfW)
-      let ssw = 0;
-      yArrays.forEach((y, i) => {
-        y.forEach(value => {
-          ssw += Math.pow(value - yMeans[i], 2);
+
+      allKeys.forEach((value, index) => {
+        if ((boxIndex & 1) === 0) {
+          // 创建一个新的 box1 元素
+          let newBox = $('<div class="box"></div>');
+          newBox.attr('id', `box${Math.floor(boxIndex / 2)}`);
+          charDiv = $('<div class="char-div"></div>');
+          charDiv.attr('id', `myDiv${boxIndex}`);
+          newBox.append(charDiv);
+          $('.container1').append(newBox);
+        } else {
+          let newBox = $('#box' + Math.floor(boxIndex / 2))
+          charDiv = $('<div class="char-div"></div>');
+          charDiv.attr('id', `myDiv${boxIndex}`);
+          newBox.append(charDiv);
+        }
+        // console.log(allLayout.get(value))
+        Plotly.newPlot("myDiv" + boxIndex, res.get(value), allLayout.get(value));
+        boxIndex++;
+      })
+
+    }
+
+    function rankSum(data) {
+      return new Promise((resolve, reject) => {
+        let yArrays = data.map(item => item.y);
+        let allData = [];
+        for (let i = 0; i < yArrays.length; i++) {
+          allData.push(yArrays[i]);
+        }
+        const dataToSend = { allData };
+        $.ajax({
+          url: 'http://localhost:8080/rank_sums',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(dataToSend),
+          success: function (result) {
+            resolve(result['p_value']);
+          },
+          error: function (error) {
+            console.error('error:', error);
+            reject('error');
+          }
         });
       });
-      const dfW = concatenatedY.length - yArrays.length;
-
-
-      // 计算 F-统计量
-      const fStat = (ssb / dfB) / (ssw / dfW);
-
-      // 计算 p-值
-      const pValue = 1 - jStat.centralF.cdf(fStat, dfB, dfW);
-
-
-      return pValue;
     }
 
+
     function kruskalWallisTest(data) {
-      // 使用 map 获取所有的 y 数组
-      let yArrays = data.map(item => item.y);
-
-      let allData = [];
-
-      for (let i = 0; i < yArrays.length; i++) {
-        allData = allData.concat(yArrays[i]);
-      }
-      
-      // console.log(allData);
-      const ranks = jStat.rank(allData);
-      // console.log(ranks);
-      const n = allData.length;
-
-      let sumRanks = [];
-
-      for (let i = 0; i < yArrays.length; i++) {
-        let rankSum = 0;
-
-        for (let j = 0; j < yArrays[i].length; j++) {
-          rankSum += ranks.shift();
+      return new Promise((resolve, reject) => {
+        let yArrays = data.map(item => item.y);
+        let allData = [];
+        for (let i = 0; i < yArrays.length; i++) {
+          allData.push(yArrays[i]);
         }
+        const dataToSend = { allData };
+        $.ajax({
+          url: 'http://localhost:8080/kruskal_wallis',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(dataToSend),
+          success: function (result) {
+            resolve(result['p_value']);
+          },
+          error: function (error) {
+            console.error('error:', error);
+            reject('error');
+          }
+        });
+      });
+    }
 
-        sumRanks.push(rankSum);
+    async function computePValue(data) {
+      let pValue;
+      if (data.length > 2) {
+        try {
+          pValue = await kruskalWallisTest(data);
+        } catch (error) {
+          console.log("Error occurred: " + error);
+          return error;
+        }
+      } else {
+        try {
+          pValue = await rankSum(data);
+        } catch (error) {
+          console.log("Error occurred: " + error);
+          return error;
+        }
       }
-      // H = (12 / (N(N + 1))) * Σ(R^2 / ni) - 3(N + 1)
-
-      let reducedSum = 0
-      for (let i = 0; i < yArrays.length; i++) {
-        reducedSum += Math.pow(sumRanks[i], 2) / yArrays[i].length
-      }
-
-      const hStat = (12 / (n * (n + 1))) * reducedSum - 3 * (n + 1);
-
-      const df = yArrays.length - 1;
-
-      // 计算卡方分布的p值（使用逆变换函数）
-      const pValue = 1 - jStat.chisquare.cdf(hStat, df);
-
       return pValue;
     }
 

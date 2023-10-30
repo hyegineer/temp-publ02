@@ -31,7 +31,7 @@
         let rows = data.slice(1).map((row) => row.split(","));
         rows.map((row) => {
           rowHeader.push(row[0])
-          link.push(row[1])
+          link.push(row[0])
         });
         rows.map((row) => {
           matrix.push(row.slice(2))
@@ -74,7 +74,7 @@
       return transposed;
     }
 
-
+    var proteinMorpheus=null;
     //draw
     function drawHeatMap() {
       let json = {
@@ -100,7 +100,7 @@
         },
       };
 
-      new morpheus.HeatMap({
+      proteinMorpheus=new morpheus.HeatMap({
         el: $('#heatmapDiv'),
         dataset: morpheus.Dataset.fromJSON(json),
         colorScheme: {
@@ -108,6 +108,18 @@
         },
       });
     }
+
+    $('#heatmapDiv').mouseup(function(event){
+      if(event.currentTarget.className == 'morpheus'){
+        if (proteinMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
+          var index = proteinMorpheus.project.hoverRowIndex
+          var target = link[index]
+          window.open('https://www.uniprot.org/uniprotkb/'+target+'/entry', '_blank');          
+        }
+        proteinMorpheus.selectedRowTrackName = ''
+      }
+      
+    });
   </script>
 </body>
 
