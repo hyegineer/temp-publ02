@@ -30,6 +30,7 @@
   <div id="nmfHeatmapDiv" style="width:95%;margin:auto;"> </div>
   <div class="nmfContainer">
     <span style="font-size: 14px;font-family: fantasy;text-align: center;" id="nmfFloatContainerBtn">Legend</span>
+    <span style="background: #008fd8;z-index: 999;height: 15px;width:0px;position: absolute;" id="nmfFloatContainerRemoveBtn"></span>
   </div>
   <div class="nmfContainer" style="overflow: auto;">
     <div id="nmfFloatContainer" style="font-size: 10px;"></div>
@@ -40,7 +41,7 @@
     width:0px;border-radius: 0 15px 15px 0;height: 25rem;
     background: #f2f5fb;position: absolute; top: 235px;right: 0rem;z-index: 999;
   }
- .nmfContainer span{display: block; background: #008fd8;width: 45px;
+ .nmfContainer #nmfFloatContainerBtn{display: block; background: #008fd8;width: 45px;
     border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
     position: relative;z-index: 999;}
 </style>
@@ -54,30 +55,34 @@ var selectizeElement = null;
 var nmfMorpheus = null;
 var linkArray =[] 
 var subGenArray = []
-var flagNav = true;
 
   $(function() {
 
     showSpinner();
 
-     $('#nmfFloatContainerBtn').click(function(){
-      if(flagNav){
-        
-        $('.nmfContainer').animate({right:'0px'});
-        $('.nmfContainer').css({width:'24rem'});
-        flagNav = false;
-        NmfLayer();
-      } else{
-        $('#nmfFloatContainer').empty();
-        //$('.nmfContainer').animate({right:'-24rem'});
-        $('.nmfContainer').css({width:'0px'});
-        flagNav = true;
-      }
-     });
+    $('#nmfFloatContainerBtn').click(function(){
+      $('.nmfContainer').animate({right:'0px'});
+      $('.nmfContainer').css({width:'24rem'});
+      $('#nmfFloatContainerRemoveBtn').addClass("glyphicon glyphicon-remove");
+      $('#nmfFloatContainerRemoveBtn').show();
+      $('#nmfFloatContainerRemoveBtn').css({width:'15px'});
+      $('#nmfFloatContainerBtn').hide();
+      $(".nmfContainer").css("z-index","auto");
+      NmfLayer();
+    });
+
+  $('#nmfFloatContainerRemoveBtn').click(function(){
+    $('#nmfFloatContainer').empty();
+    $('.nmfContainer').css({width:'0px'});
+    $('#nmfFloatContainerRemoveBtn').hide();
+    $('#nmfFloatContainerBtn').show();
+    $('#nmfFloatContainerRemoveBtn').css({width:'0px'});
+    $(".nmfContainer").css("z-index","999");
+  });
 
     $.ajax({
       type:"GET",    
-      url: baseURL+"file/tumer_nmf_all.csv", 
+      url: "../file/tumer_nmf_all.csv", 
       data:[],   
       dataType:"text", 
       cache:false, 

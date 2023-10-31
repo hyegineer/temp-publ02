@@ -340,8 +340,8 @@ function getColumnColorModel(metaList){
   var yellowSortList = yelloList.map(x => parseFloat(x.trim()).toFixed(3)).sort(ascOrder);
   var greenSortList = greenList.map(x => parseFloat(x.trim()).toFixed(3)).sort(ascOrder);
 
-  var yellowColorList = gradient('#FFFFFF','#006030',yellowSortList.length);
-  var greenColorList = gradient('#FFFFFF','#fbc504',greenSortList.length);
+  var yellowColorList = gradient_two('#0000ff','#ff0000',yellowSortList);
+  var greenColorList = gradient('#FFFFFF','#ff0000',greenSortList.length);
 
   for(var i =0;i<metaList.length;i++){
     var tmp = metaList[i];
@@ -359,7 +359,17 @@ function getColumnColorModel(metaList){
       })
     }
 
-    returnMap[tmp['name']]=tmpMap;
+    if(tmp['name'] == "Cell type-based IC"){
+      returnMap[tmp['name']]={'NAT-enriched':'#d8b365','CTE':'#2ca02c','HTE':'#1f77b4'};
+    } else if(tmp['name'] == 'Other Oncogene Alteration'){
+      returnMap[tmp['name']]={'None':'#ffffff','KRAS':'#aec7e8','RET':'#ff7f0e','ALK':'#ffbb78',
+                            'ERBB2':'#2ca02c','PIK3CA':'#98df8a','MET':'#d62728','KRAS_PIK3CA':'#ff9896'};
+    } else if(tmp['name'] == "Recurrence Status"){
+      returnMap[tmp['name']]={'0':'#d8b365','1':'#2ca02c','':'#ffffff'};
+    }else{
+      returnMap[tmp['name']]=tmpMap;
+    }
+
   }
 
   return returnMap;
@@ -397,4 +407,29 @@ function gradient(startColor, endColor, step){
       gradientColorArr.push(rgbToHex(parseInt(rStep * i + sColor[0]), parseInt(gStep * i + sColor[1]), parseInt(bStep * i + sColor[2])));
   }
   return gradientColorArr;
+}
+
+function gradient_two(startColor, endColor, sortList){
+
+  var upZeroList = []
+  var downZeroList = []
+  var k = 0
+  var j = 0
+
+  $.each(sortList,function(i,v){
+    if(v>=0){
+      upZeroList[k] = v;
+      k++;
+    }else{
+      downZeroList[j] = v;
+      j++
+    }
+  });
+
+  upZeroColorArr = gradient('#FFFFFF',endColor,upZeroList.length);
+  downZeroColorArr = gradient(startColor,'#FFFFFF',downZeroList.length);
+
+ var gradientColorArr = $.merge(downZeroColorArr, upZeroColorArr)
+ 
+ return gradientColorArr;
 }
