@@ -3,11 +3,11 @@ from scipy import stats
 from flask_cors import CORS  # 导入CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/kruskal_wallis": {"origins": "http://127.0.0.1:8080",
+CORS(app, resources={r"/kruskal_wallis": {"origins": "http://127.0.0.1:5500",
                                           "methods": ["POST"],
                                           "allow_headers": ["Content-Type"]
                                           },
-                     r"/rank_sums": {"origins": "http://127.0.0.1:8080",
+                     r"/rank_sums": {"origins": "http://127.0.0.1:5500",
                                      "methods": ["POST"],
                                      "allow_headers": ["Content-Type"]
                                      }

@@ -1,5 +1,13 @@
+<html lang="en">
 
-<style  type="text/css">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Box Plot</title>
+
+</head>
+
+<style>
   .container1 {
     display: flex;
     flex-direction: column;
@@ -20,6 +28,7 @@
   }
 </style>
 
+<body>
   <div class="layerPopup">
     <div class="spinner"></div>
   </div>
@@ -39,8 +48,9 @@
       <div style="width: 120px;margin-left: 10px;">
         <select id="select-tools2" multiple placeholder="Sort by"></select>
       </div>
-      <div style="margin: auto;margin-left: 10px ;">
-        <span id="sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true"></span>
+      <div style="margin: auto;margin-left: 10px;">
+        <button id="sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true" 
+        style="height: 30px;"></button>
       </div>
     </div>
   </div>
@@ -49,7 +59,9 @@
   </div>
 
 
-  <script type="text/javascript">
+
+
+  <script>
 
 
     var $select = $('#select-tools').selectize({
@@ -90,7 +102,6 @@
     sortOptions.push({ id: 1, title: 'P-Value' })
     sortOptions.push({ id: 2, title: 'Gene Name' })
     selectizeControl2.addOption(sortOptions);
-
     selectizeControl2.on('change', function (value) {
       if (value[0] === '1') {
         sortKey = 1
@@ -197,10 +208,10 @@
               // 这里的样本包含正常样本，但是meta数据只有癌症患者，所以在分类数据时去除正常患者
               // console.log(acetlysitePatient)
               // console.log(allAcetlysite)
-              for (const key of allAcetlysite.keys()) {
-                targetOptions.push({ id: index, title: key })
-                index++;
-              }
+              // for (const key of allAcetlysite.keys()) {
+              //   targetOptions.push({ id: index, title: key })
+              //   index++;
+              // }
 
               $.ajax({
                 type: "GET",
@@ -220,10 +231,10 @@
                   // 这里的样本包含正常样本，但是meta数据只有癌症患者，所以在分类数据时去除正常患者
                   // console.log(phosphositePatient)
                   // console.log(allPhosphosite)
-                  for (const key of allPhosphosite.keys()) {
-                    targetOptions.push({ id: index, title: key })
-                    index++;
-                  }
+                  // for (const key of allPhosphosite.keys()) {
+                  //   targetOptions.push({ id: index, title: key })
+                  //   index++;
+                  // }
 
                   $.ajax({
                     type: "GET",
@@ -277,7 +288,6 @@
     var page = 0
     var groupValue = ""
     $("#apply-btn").click(function () {
-      sortKey = 0
       res = new Map()
       page = 0
       const targetValue = $('#select-tools').text();
@@ -396,7 +406,6 @@
       $('.container1').empty();
       let boxIndex = 0
       let allKeys = Array.from(res.keys())
-      console.log(sortKey)
       if (sortKey === 2) {
         // 字典序排序
         if (sortOrder === 0) {
@@ -515,4 +524,17 @@
       return pValue;
     }
 
+
+
+
+
+
+
+  </script>
+</body>
+
+</html>
 </script>
+</body>
+
+</html>
