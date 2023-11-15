@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDIAMOND</title>
 
-    
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- Optional theme -->
@@ -36,11 +35,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.1.0/math.min.js"></script>
-
-
    
-   <style>
-        .btn:active:focus,.btn:focus{
+   <style type="text/css">
+        .btn:focus, .btn:active:focus, .btn.active:focus,
+        .btn.focus, .btn:active.focus, .btn.active.focus {
             outline: none;
         }
         .m-5 {margin:3rem !important}
@@ -95,9 +93,28 @@
            
         </div>
     </div>
-    <div id="mainContent"></div>
+    <div id="mainContent">
+        <div id="NMFmainContent"></div>
+        <div id="IMMUNEmainContent"></div>
+        <div id="PROTEINmainContent"></div>
+        <div id="PHOSPHOmainContent"></div>
+        <div id="ACETYLmainContent"></div>
+        <div id="GENEmainContent"></div>
+        <div id="SURVIVALmainContent"></div>
+        <div id="COMPARISONmainContent"></div>
+    </div>
 </body>
-<script>
+
+<script type="text/javascript">
+
+    var nmfPage = true;
+    var immunPage = true;
+    var proteinPage = true;
+    var phosphoPage = true;
+    var acetylPage = true;
+    var genePage = true;
+    var survivalPage = true;
+    var comparisonPage = true;
 
     $(function() {
 
@@ -115,30 +132,72 @@
         dropdownOpen();
 
         $("#mymeun li").click(function(){
+            debugger
+            $('#NMFmainContent').hide();
+            $('#IMMUNEmainContent').hide();
+            $('#PROTEINmainContent').hide();
+            $('#PHOSPHOmainContent').hide();
+            $('#ACETYLmainContent').hide();
+            $('#GENEmainContent').hide();
+            $('#COMPARISONmainContent').hide();
+            $('#SURVIVALmainContent').hide();
+
             switch($(this).attr('name')){
                 case 'NMF':
-                    $('#mainContent').load('/subpage/nmf.html')
+                    $('#NMFmainContent').show();
+                    if(nmfPage){
+                        nmfPage = false;
+                        $('#NMFmainContent').load('/subpage/nmf.html')
+                    }  
                 break;
                 case 'IMMUNE':
-                    $('#mainContent').load('/subpage/immune.html')
+                    $('#IMMUNEmainContent').show();
+                    if(immunPage){
+                        immunPage = false
+                        $('#IMMUNEmainContent').load('/subpage/immune.html')
+                    } 
                 break;
                 case 'PROTEIN':
-                    $('#mainContent').load('/subpage/quantitation_protein.html')
+                    $('#PROTEINmainContent').show();
+                    if(proteinPage){
+                        proteinPage = false
+                        $('#PROTEINmainContent').load('/subpage/quantitation_protein.html')
+                    } 
                 break;
                 case 'PHOSPHO':
-                    $('#mainContent').load('/subpage/quantitation_phosphosite.html')
+                    $('#PHOSPHOmainContent').show();
+                    if(phosphoPage){
+                        phosphoPage = false
+                        $('#PHOSPHOmainContent').load('/subpage/quantitation_phosphosite.html')
+                    }
                 break;
                 case 'ACETYL':
-                    $('#mainContent').load('/subpage/quantitation_acetylsite.html')
+                    $('#ACETYLmainContent').show();
+                    if(acetylPage){
+                        acetylPage = false
+                        $('#ACETYLmainContent').load('/subpage/quantitation_acetylsite.html')
+                    }
                 break;
                 case 'RNA':
-                    $('#mainContent').load('/subpage/quantitation_gene.html')
+                    $('#GENEmainContent').show();
+                    if(genePage){
+                        genePage = false
+                        $('#GENEmainContent').load('/subpage/quantitation_gene.html')
+                    }
                 break;
                 case 'COMPARISON':
-                    $('#mainContent').load('/subpage/comparison.html')
+                    $('#COMPARISONmainContent').show();
+                    if(comparisonPage){
+                        comparisonPage = false
+                        $('#COMPARISONmainContent').load('/subpage/comparison.html')
+                    }
                 break;
                 case 'SURVIVAL':
-                    $('#mainContent').load('/subpage/survival.html')
+                    $('#SURVIVALmainContent').show();
+                    if(survivalPage){
+                        survivalPage = false
+                        $('#SURVIVALmainContent').load('/subpage/survival.html')
+                    } 
                 break;
             }
             
@@ -148,12 +207,13 @@
             type:"GET",    
             url: "../file/NMF_meta.csv", 
             data:[],   
-            dataType:"text",  
+            dataType:"text", 
             cache:false,
             success:function(data){   
-              metaArray = data.split('\n')
+              metaArray = data.split('\n');
             }
-          });    
+        });   
+ 
     });
    
   </script>
