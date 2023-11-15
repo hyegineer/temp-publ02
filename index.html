@@ -132,73 +132,75 @@
         dropdownOpen();
 
         $("#mymeun li").click(function(){
-            debugger
-            $('#NMFmainContent').hide();
-            $('#IMMUNEmainContent').hide();
-            $('#PROTEINmainContent').hide();
-            $('#PHOSPHOmainContent').hide();
-            $('#ACETYLmainContent').hide();
-            $('#GENEmainContent').hide();
-            $('#COMPARISONmainContent').hide();
-            $('#SURVIVALmainContent').hide();
+            
+            if($(this).attr('name') != undefined){
+                $('#NMFmainContent').hide();
+                $('#IMMUNEmainContent').hide();
+                $('#PROTEINmainContent').hide();
+                $('#PHOSPHOmainContent').hide();
+                $('#ACETYLmainContent').hide();
+                $('#GENEmainContent').hide();
+                $('#COMPARISONmainContent').hide();
+                $('#SURVIVALmainContent').hide();
 
-            switch($(this).attr('name')){
-                case 'NMF':
-                    $('#NMFmainContent').show();
-                    if(nmfPage){
-                        nmfPage = false;
-                        $('#NMFmainContent').load('/subpage/nmf.html')
-                    }  
-                break;
-                case 'IMMUNE':
-                    $('#IMMUNEmainContent').show();
-                    if(immunPage){
-                        immunPage = false
-                        $('#IMMUNEmainContent').load('/subpage/immune.html')
-                    } 
-                break;
-                case 'PROTEIN':
-                    $('#PROTEINmainContent').show();
-                    if(proteinPage){
-                        proteinPage = false
-                        $('#PROTEINmainContent').load('/subpage/quantitation_protein.html')
-                    } 
-                break;
-                case 'PHOSPHO':
-                    $('#PHOSPHOmainContent').show();
-                    if(phosphoPage){
-                        phosphoPage = false
-                        $('#PHOSPHOmainContent').load('/subpage/quantitation_phosphosite.html')
-                    }
-                break;
-                case 'ACETYL':
-                    $('#ACETYLmainContent').show();
-                    if(acetylPage){
-                        acetylPage = false
-                        $('#ACETYLmainContent').load('/subpage/quantitation_acetylsite.html')
-                    }
-                break;
-                case 'RNA':
-                    $('#GENEmainContent').show();
-                    if(genePage){
-                        genePage = false
-                        $('#GENEmainContent').load('/subpage/quantitation_gene.html')
-                    }
-                break;
-                case 'COMPARISON':
-                    $('#COMPARISONmainContent').show();
-                    if(comparisonPage){
-                        comparisonPage = false
-                        $('#COMPARISONmainContent').load('/subpage/comparison.html')
-                    }
-                break;
-                case 'SURVIVAL':
-                    $('#SURVIVALmainContent').show();
-                    if(survivalPage){
-                        survivalPage = false
-                        $('#SURVIVALmainContent').load('/subpage/survival.html')
-                    } 
-                break;
+                switch($(this).attr('name')){
+                    case 'NMF':
+                        $('#NMFmainContent').show();
+                        if(nmfPage){
+                            nmfPage = false;
+                            $('#NMFmainContent').load('/subpage/nmf.html')
+                        }  
+                    break;
+                    case 'IMMUNE':
+                        $('#IMMUNEmainContent').show();
+                        if(immunPage){
+                            immunPage = false
+                            $('#IMMUNEmainContent').load('/subpage/immune.html')
+                        } 
+                    break;
+                    case 'PROTEIN':
+                        $('#PROTEINmainContent').show();
+                        if(proteinPage){
+                            proteinPage = false
+                            $('#PROTEINmainContent').load('/subpage/quantitation_protein.html')
+                        } 
+                    break;
+                    case 'PHOSPHO':
+                        $('#PHOSPHOmainContent').show();
+                        if(phosphoPage){
+                            phosphoPage = false
+                            $('#PHOSPHOmainContent').load('/subpage/quantitation_phosphosite.html')
+                        }
+                    break;
+                    case 'ACETYL':
+                        $('#ACETYLmainContent').show();
+                        if(acetylPage){
+                            acetylPage = false
+                            $('#ACETYLmainContent').load('/subpage/quantitation_acetylsite.html')
+                        }
+                    break;
+                    case 'RNA':
+                        $('#GENEmainContent').show();
+                        if(genePage){
+                            genePage = false
+                            $('#GENEmainContent').load('/subpage/quantitation_gene.html')
+                        }
+                    break;
+                    case 'COMPARISON':
+                        $('#COMPARISONmainContent').show();
+                        if(comparisonPage){
+                            comparisonPage = false
+                            $('#COMPARISONmainContent').load('/subpage/comparison.html')
+                        }
+                    break;
+                    case 'SURVIVAL':
+                        $('#SURVIVALmainContent').show();
+                        if(survivalPage){
+                            survivalPage = false
+                            $('#SURVIVALmainContent').load('/subpage/survival.html')
+                        } 
+                    break;
+                }   
             }
             
         });

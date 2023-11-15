@@ -1,4 +1,4 @@
-  <div id="heatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
+  <div id="aceHeatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
   <script type="text/javascript">
 
     var matrix = []
@@ -86,14 +86,14 @@
       };
 
       acetylsiteMorpheus=new morpheus.HeatMap({
-        el: $('#heatmapDiv'),
+        el: $('#aceHeatmapDiv'),
         dataset: morpheus.Dataset.fromJSON(json),
         colorScheme: {
           type: 'fixed',
         },
       });
     }
-    $('#heatmapDiv').mouseup(function(event){
+    $('#aceHeatmapDiv').mouseup(function(event){
       if(event.currentTarget.className == 'morpheus'){
         if (acetylsiteMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
           var index = acetylsiteMorpheus.project.hoverRowIndex

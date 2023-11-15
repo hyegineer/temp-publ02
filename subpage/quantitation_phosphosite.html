@@ -1,5 +1,5 @@
 
-  <div id="heatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
+  <div id="phosphoheatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
 
   <script type="text/javascript">
 
@@ -89,7 +89,7 @@
       };
 
       phosphoMorpheus=new morpheus.HeatMap({
-        el: $('#heatmapDiv'),
+        el: $('#phosphoheatmapDiv'),
         dataset: morpheus.Dataset.fromJSON(json),
         colorScheme: {
           type: 'fixed',
@@ -97,7 +97,7 @@
       });
     }
 
-    $('#heatmapDiv').mouseup(function(event){
+    $('#phosphoheatmapDiv').mouseup(function(event){
       if(event.currentTarget.className == 'morpheus'){
         if (phosphoMorpheus.selectedRowTrackName == 'Link' && ((event.button == 0) || (event.which == 1))) {
           var index = phosphoMorpheus.project.hoverRowIndex

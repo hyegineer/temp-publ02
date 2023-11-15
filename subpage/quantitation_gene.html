@@ -1,4 +1,4 @@
-  <div id="heatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
+  <div id="geneheatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
 
   <script type="text/javascript">
 
@@ -83,7 +83,7 @@
       };
 
       new morpheus.HeatMap({
-        el: $('#heatmapDiv'),
+        el: $('#geneheatmapDiv'),
         dataset: morpheus.Dataset.fromJSON(json),
         colorScheme: {
           type: 'fixed',
