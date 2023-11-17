@@ -24,7 +24,7 @@
 
   .char-div {
     width: 48%;
-    height: 38vh;
+    height: 45vh;
   }
 </style>
 
@@ -49,8 +49,7 @@
         <select id="select-tools2" multiple placeholder="Sort by"></select>
       </div>
       <div style="margin: auto;margin-left: 10px;">
-        <button id="sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true" 
-        style="height: 30px;"></button>
+        <button id="sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true" style="height: 30px;"></button>
       </div>
     </div>
   </div>
@@ -362,11 +361,14 @@
         let promise = computePValue(data).then(result => {
           pValue = result
           allPvalue.set(value, pValue)
-          if (pValue < 0.01) {
-            pText = "p < 0.01"
-          } else {
-            pText = "p = " + parseFloat(pValue.toFixed(2))
-          }
+          // if (pValue < 0.01) {
+          //   pText = "p < 0.01"
+          // } else {
+          //   pText = "p = " + parseFloat(pValue.toFixed(2))
+          // }
+          pValue = formatNumbers(pValue)
+          pText = "p = " + pValue
+
 
           var layout = {
             title: value,
@@ -477,6 +479,19 @@
           }
         });
       });
+    }
+
+    function formatNumbers(num) {
+
+      // Check if the number is very close to 0 (but not 0)
+      if (Math.abs(num) > 0 && Math.abs(num) < 1e-5) {
+        // Use scientific notation
+        return num.toExponential(5);
+      } else {
+        // Otherwise, round to 5 decimal places
+        return Number(num.toFixed(5));
+      }
+
     }
 
 
