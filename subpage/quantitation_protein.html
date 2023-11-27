@@ -1,6 +1,29 @@
+<div id="proteinConent">
 
-  <div id="proteinheatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
+  <div class="layerPopup">
+    <div class="spinner"></div>
+  </div>
 
+  <div id="proteinheatmapDiv" style="width: 95%; height: 600px;margin: auto;"></div>
+
+  <div class="proteinContainer">
+    <span style="font-size: 14px;font-family: fantasy;text-align: center;" id="proteinFloatContainerBtn">Legend</span>
+    <span style="background: #008fd8;z-index: 999;height: 15px;width:0px;position: absolute;" id="proteinFloatContainerRemoveBtn"></span>
+  </div>
+  <div class="proteinContainer" style="overflow: auto;">
+    <div id="proteinFloatContainer" style="font-size: 10px;"></div>
+  </div>
+</div>
+  
+  <style type="text/css">
+    .proteinContainer{
+      width:0px;border-radius: 0 15px 15px 0;height: 25rem;
+      background: #f2f5fb;position: absolute; top: 130px;right: 0rem;z-index: 999;
+    }
+   .proteinContainer #proteinFloatContainerBtn{display: block; background: #008fd8;width: 45px;
+      border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
+      position: relative;z-index: 999;}
+  </style>
 
   <script type="text/javascript">
     var matrix = []
@@ -8,6 +31,9 @@
     var link = []
     var metaData = []
     var patientData = []
+
+    showSpinner('proteinConent');
+
 
     $.ajax({
       type: "GET",
@@ -44,7 +70,7 @@
             array: patientData[i]
           })
         }
-        drawHeatMap();
+        drawProteinHeatMap();
       },
     });
 
@@ -65,7 +91,7 @@
 
     var proteinMorpheus=null;
     //draw
-    function drawHeatMap() {
+    function drawProteinHeatMap() {
       let json = {
         rows: rowHeader.length,
         columns: patientData[0].length,
@@ -96,6 +122,8 @@
           type: 'fixed',
         },
       });
+
+      hideSpinner('proteinConent')
     }
 
     $('#proteinheatmapDiv').mouseup(function(event){
@@ -109,4 +137,57 @@
       }
       
     });
+
+    $('#proteinFloatContainerBtn').click(function(){
+      $('.proteinContainer').animate({right:'0px'});
+      $('.proteinContainer').css({width:'24rem'});
+      $('#proteinFloatContainerRemoveBtn').addClass("glyphicon glyphicon-remove");
+      $('#proteinFloatContainerRemoveBtn').show();
+      $('#proteinFloatContainerRemoveBtn').css({width:'15px'});
+      $('#proteinFloatContainerBtn').hide();
+      $(".proteinContainer").css("z-index","auto");
+      proteinLayer();
+    });
+
+    $('#proteinFloatContainerRemoveBtn').click(function(){
+      $('#proteinFloatContainer').empty();
+      $('.proteinContainer').css({width:'0px'});
+      $('#proteinFloatContainerRemoveBtn').hide();
+      $('#proteinFloatContainerBtn').show();
+      $('#proteinFloatContainerRemoveBtn').css({width:'0px'});
+      $(".proteinContainer").css("z-index","999");
+    });
+
+    function proteinLayer(){
+      
+      var colorMap = proteinMorpheus.project.columnColorModel.vectorNameToColorMap.map;
+      var htmlStr="<div style='height: 5px;'></div><table style='font-size: 10px;'><tr>";
+      var substr="";
+      var i = 1;
+      $.map(colorMap, function(k, v){
+          if(k.key !="Sample.ID"){
+            htmlStr += "<td style='text-align: center;'>"+k.key+"</td>";
+            var newArr = $.map(k.value,function(key,value){return key});
+            var subArr = $.map(newArr[0],function(key,value){return key});
+            substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;font-size: 10px;'>";
+            $.map(subArr,function(key,value){
+              substr += "<tr><td bgcolor='"+key.value+"' height='15' width='15'></td>"+
+                "<td>"+key.key+"</td></tr>";
+            });
+            substr += "</table><div style='height: 5px;'></div></td>";
+            if(i%1==0){
+              htmlStr += substr;
+              htmlStr +="</tr><tr>";
+              substr = "";
+            }
+            i++;
+          }
+          
+      });
+      htmlStr += substr;
+      htmlStr += "</tr><tr></table>";
+
+      $('#proteinFloatContainer').append(htmlStr);
+
+  }
   </script>

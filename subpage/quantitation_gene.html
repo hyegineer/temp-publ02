@@ -1,4 +1,29 @@
-  <div id="geneheatmapDiv" style="width: 90%; height: 600px;margin: auto;"></div>
+<div id="geneContent">
+
+  <div class="layerPopup">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="geneheatmapDiv" style="width: 95%; height: 600px;margin: auto;"></div>
+
+  <div class="geneContainer">
+    <span style="font-size: 14px;font-family: fantasy;text-align: center;" id="geneFloatContainerBtn">Legend</span>
+    <span style="background: #008fd8;z-index: 999;height: 15px;width:0px;position: absolute;" id="geneFloatContainerRemoveBtn"></span>
+  </div>
+  <div class="geneContainer" style="overflow: auto;">
+    <div id="geneFloatContainer" style="font-size: 10px;"></div>
+  </div>
+</div>
+
+<style type="text/css">
+  .geneContainer{
+    width:0px;border-radius: 0 15px 15px 0;height: 25rem;
+    background: #f2f5fb;position: absolute; top: 130px;right: 0rem;z-index: 999;
+  }
+ .geneContainer #geneFloatContainerBtn{display: block; background: #008fd8;width: 45px;
+    border-radius: 4px 4px 4px 4px;font-size: 20px;line-height: 30px;right:5rem;
+    position: relative;z-index: 999;}
+</style>
 
   <script type="text/javascript">
 
@@ -6,6 +31,8 @@
     var rowHeader = []
     var metaData = []
     var patientData = []
+
+    showSpinner('geneContent');
 
     $.ajax({
       type: "GET",
@@ -41,7 +68,7 @@
             array: patientData[i]
           })
         }
-        drawHeatMap();
+        drawGeneHeatMap();
       },
     });
 
@@ -59,10 +86,10 @@
       return transposed;
     }
 
-
+    var genesiteMorpheus=null;
 
     //draw
-    function drawHeatMap() {
+    function drawGeneHeatMap() {
       let json = {
         rows: rowHeader.length,
         columns: patientData[0].length,
@@ -82,16 +109,69 @@
         },
       };
 
-      new morpheus.HeatMap({
+      genesiteMorpheus = new morpheus.HeatMap({
         el: $('#geneheatmapDiv'),
         dataset: morpheus.Dataset.fromJSON(json),
         colorScheme: {
           type: 'fixed',
         },
       });
-      menu: toolbarMenu
+      //menu: toolbarMenu
+
+      hideSpinner('geneContent')
     }
 
+    $('#geneFloatContainerBtn').click(function(){
+      $('.geneContainer').animate({right:'0px'});
+      $('.geneContainer').css({width:'24rem'});
+      $('#geneFloatContainerRemoveBtn').addClass("glyphicon glyphicon-remove");
+      $('#geneFloatContainerRemoveBtn').show();
+      $('#geneFloatContainerRemoveBtn').css({width:'15px'});
+      $('#geneFloatContainerBtn').hide();
+      $(".geneContainer").css("z-index","auto");
+      geneLayer();
+    });
+
+    $('#geneFloatContainerRemoveBtn').click(function(){
+      $('#geneFloatContainer').empty();
+      $('.geneContainer').css({width:'0px'});
+      $('#geneFloatContainerRemoveBtn').hide();
+      $('#geneFloatContainerBtn').show();
+      $('#geneFloatContainerRemoveBtn').css({width:'0px'});
+      $(".geneContainer").css("z-index","999");
+    });
+
+    function geneLayer(){
+      debugger;
+      var colorMap = genesiteMorpheus.project.columnColorModel.vectorNameToColorMap.map;
+      var htmlStr="<div style='height: 5px;'></div><table style='font-size: 10px;'><tr>";
+      var substr="";
+      var i = 1;
+      $.map(colorMap, function(k, v){
+          if(k.key !="Sample.ID"){
+            htmlStr += "<td style='text-align: center;'>"+k.key+"</td>";
+            var newArr = $.map(k.value,function(key,value){return key});
+            var subArr = $.map(newArr[0],function(key,value){return key});
+            substr += "<td style='height: fit-content;'><table border='1px solid #ccc' cellspacing='0' cellpadding='0' style='margin: auto;font-size: 10px;'>";
+            $.map(subArr,function(key,value){
+              substr += "<tr><td bgcolor='"+key.value+"' height='15' width='15'></td>"+
+                "<td>"+key.key+"</td></tr>";
+            });
+            substr += "</table><div style='height: 5px;'></div></td>";
+            if(i%1==0){
+              htmlStr += substr;
+              htmlStr +="</tr><tr>";
+              substr = "";
+            }
+            i++;
+          }
+          
+      });
+      htmlStr += substr;
+      htmlStr += "</tr><tr></table>";
+
+      $('#geneFloatContainer').append(htmlStr);
+    }
 
 
 
