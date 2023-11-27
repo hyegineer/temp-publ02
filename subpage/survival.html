@@ -47,9 +47,12 @@
       <button id="survival_apply-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
         Apply
       </button>
-      <button id="survival_sort-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
+      <!-- <button id="survival_sort-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
         SortBy
-      </button>
+      </button> -->
+      <div style="width: 120px;margin-left: 10px;">
+        <select id="survival_select-tools2" multiple placeholder="Sort by"></select>
+      </div>
     </div>
   </div>
 
@@ -93,9 +96,31 @@
       options: [],
       create: false,
     });
+    var $select2 = $('#survival_select-tools2').selectize({
+      plugins: ["remove_button"],
+      maxItems: 1,
+      maxOptions: 2,
+      valueField: 'id',
+      labelField: 'title',
+      searchField: 'title',
+      options: [],
+      create: false
+    });
 
-
-
+    var sortOptions = []
+    /*var selectizeControl2 = $select2[0].selectize;
+    sortOptions.push({ id: 1, title: 'P-Value' })
+    sortOptions.push({ id: 2, title: 'Gene Name' })
+    selectizeControl2.addOption(sortOptions);
+    selectizeControl2.on('change', function (value) {
+      if (value[0] === '1') {
+        sortKey = 1
+        draw(res, allLayout, allPvalue)
+      } else if (value[0] === '2') {
+        sortKey = 2
+        draw(res, allLayout, allPvalue)
+      }
+    });*/
 
     var allUniqueValue = new Map();
     var allPatient = new Map();
@@ -769,7 +794,7 @@ function log_rank_Test(data,high,low){
         targetArray.set(key, value.slice(1))
         targetPatient.set(key, phosphositePatient.slice(1))
       }
-      debugger
+      
     //   var newMap = {};
       var temp_list = []
       var iterator = targetArray.values()
@@ -838,16 +863,16 @@ function log_rank_Test(data,high,low){
         }
       }
       copy = deepCopy(targetArray)
-      debugger
+      
       var median_iter = copy.keys()
       var median1 = []
-      debugger
+      
       for (let i = 0 ; i < targetArray.size; i++){
       
         var temp_array1 = median_iter.next().value
         median1.push(median(temp_array1))
       }
-      debugger
+      
       //console.log(median1)
       var high = []
       for(let i = 0; i < median1.length; i++){
@@ -874,10 +899,129 @@ function log_rank_Test(data,high,low){
       
         draw(res,targetArray.size)
         prev_protein = targetValue
-        debugger
+        
     })
 
     //click sort begin
+    var sortOptions = []
+    var selectizeControl2 = $select2[0].selectize;
+    sortOptions.push({ id: 1, title: 'P-Value' })
+    sortOptions.push({ id: 2, title: 'Gene Name' })
+    selectizeControl2.addOption(sortOptions);
+    selectizeControl2.on('change', function (value) {
+      if (value[0] === '1') {
+        sort_value = 1
+      
+      $(".survival_container1").empty();
+      if(processed == 1){
+        p_val_array = result_array
+        if(sort_value == 1){
+          p_val_array = p_val_array.sort(function(a, b){
+            return parseFloat(a["p_val"]) - parseFloat(b["p_val"]);
+          })
+          let boxIndex = 0
+            for(let i = 0; i < p_val_array.length; i ++){
+              if ((boxIndex & 1) === 0) {
+                let newBox = $('<div class="survival_box"></div>');
+                newBox.attr('id', `survival_box${Math.floor(boxIndex / 2)}`);
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+                $('.survival_container1').append(newBox);
+              } else {
+                let newBox = $('#survival_box' + Math.floor(boxIndex / 2))
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+              }
+              Plotly.newPlot("survival_myDiv"+boxIndex, p_val_array[i].data, p_val_array[i].layout);
+              boxIndex++;
+            }
+        }
+        else{
+          let boxIndex = 0
+            for(let i = 0; i < p_val_array.length; i ++){
+              if ((boxIndex & 1) === 0) {
+                let newBox = $('<div class="survival_box"></div>');
+                newBox.attr('id', `survival_box${Math.floor(boxIndex / 2)}`);
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+                $('.survival_container1').append(newBox);
+              } else {
+                let newBox = $('#survival_box' + Math.floor(boxIndex / 2))
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+              }
+              Plotly.newPlot("survival_myDiv"+boxIndex, p_val_array[i].data, p_val_array[i].layout);
+              boxIndex++;
+            }
+        }
+      }
+      } else if (value[0] === '2') {
+        sort_value = 1
+      
+      $(".survival_container1").empty();
+      if(processed == 1){
+        p_val_array = result_array
+        if(sort_value == 1){
+          p_val_array = p_val_array.sort(function(a, b){
+            //debugger
+            var nameA = a["title"].toUpperCase(); // ignore upper and lowercase
+            var nameB = b["title"].toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+              return -1;
+            }
+            if (nameA > nameB) {
+              return 1;
+            }
+            //return parseFloat(a["title"]) - parseFloat(b["title"]);
+          })
+          let boxIndex = 0
+            for(let i = 0; i < p_val_array.length; i ++){
+              if ((boxIndex & 1) === 0) {
+                let newBox = $('<div class="survival_box"></div>');
+                newBox.attr('id', `survival_box${Math.floor(boxIndex / 2)}`);
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+                $('.survival_container1').append(newBox);
+              } else {
+                let newBox = $('#survival_box' + Math.floor(boxIndex / 2))
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+              }
+              Plotly.newPlot("survival_myDiv"+boxIndex, p_val_array[i].data, p_val_array[i].layout);
+              boxIndex++;
+            }
+        }
+        else{
+          let boxIndex = 0
+            for(let i = 0; i < p_val_array.length; i ++){
+              if ((boxIndex & 1) === 0) {
+                let newBox = $('<div class="survival_box"></div>');
+                newBox.attr('id', `survival_box${Math.floor(boxIndex / 2)}`);
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+                $('.survival_container1').append(newBox);
+              } else {
+                let newBox = $('#survival_box' + Math.floor(boxIndex / 2))
+                charDiv = $('<div class="survival_char-div"></div>');
+                charDiv.attr('id', `survival_myDiv${boxIndex}`);
+                newBox.append(charDiv);
+              }
+              Plotly.newPlot("survival_myDiv"+boxIndex, p_val_array[i].data, p_val_array[i].layout);
+              boxIndex++;
+            }
+        }
+      }
+      }
+
+    });
+    /*
     $("#survival_sort-btn").click(function () {
       sort_value = 1
       
@@ -934,7 +1078,7 @@ function log_rank_Test(data,high,low){
     //console.log(result_array)
     //click sort end
     
-
+    */
 
 
 //survival plot end
