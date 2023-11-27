@@ -425,14 +425,15 @@ trace3 = {
   x: censor_low.map((item) => item.c_t*12),
   y: censor_low.map((item) => item.c_s),
   mode: 'markers',
-  marker: { size: 6, color: 'blue' },
+  
+  marker: { size: 6, color: 'blue', symbol : 142 },
   showlegend :false
 }
 trace4 = {
   x: censor_high.map((item) => item.c_t*12),
   y: censor_high.map((item) => item.c_s),
   mode: 'markers',
-  marker: { size: 6, color: 'red' },
+  marker: { size: 6, color: 'red', symbol : 142 },
   showlegend :false
 }
 
