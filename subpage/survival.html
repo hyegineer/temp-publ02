@@ -1,13 +1,4 @@
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Box Plot</title>
-
-</head>
-
-<style>
+<style type="text/css">
   .survival_container1 {
     display: flex;
     flex-direction: column;
@@ -34,7 +25,6 @@
   }
 </style>
 
-<body>
   <div class="layerPopup">
     <div class="spinner"></div>
   </div>
@@ -86,7 +76,7 @@
   </div> -->
 
 
-  <script>
+  <script type="text/javascript">
     
     var container = document.getElementsByClassName('survival_container1')
     var $select = $('#survival_select-tools').selectize({
@@ -179,7 +169,7 @@
 
       $.ajax({
         type: "GET",
-        url: baseURL + "/file/Quantitation_proteins.csv",
+        url: "../file/Quantitation_proteins.csv",
         dataType: "text",
         cache: false,
         success: function (data) {
@@ -202,7 +192,7 @@
           //console.log(allProtein)
           $.ajax({
             type: "GET",
-            url: baseURL + "/file/Quantitation_acetyl.csv",
+            url: "../file/Quantitation_acetyl.csv",
             dataType: "text",
             cache: false,
             success: function (data) {
@@ -226,7 +216,7 @@
 
               $.ajax({
                 type: "GET",
-                url: baseURL + "/file/Quantitation_phospho.csv",
+                url: "../file/Quantitation_phospho.csv",
                 dataType: "text",
                 cache: false,
                 success: function (data) {
@@ -249,7 +239,7 @@
                   //console.log(allPhosphosite)
                   $.ajax({
                     type: "GET",
-                    url: baseURL + "/file/Quantitation_genes.csv",
+                    url: "../file/Quantitation_genes.csv",
                     dataType: "text",
                     cache: false,
                     success: function (data) {
@@ -331,7 +321,7 @@ var min_date = 0
 //var max_date = d3.max(data, (d)=>d.time)
 var max_date = 11
 
-    d3.csv("http://127.0.0.1:5501/PDIAMOND/file/Overall_survivals.csv", function(raw_data){
+    d3.csv("../file/Overall_survivals.csv", function(raw_data){
 
 function filterHigh(obj){
     if (data_high_list.includes(obj.sample)){
@@ -1329,7 +1319,3 @@ function log_rank_Test(data,high,low){
 //survival plot end
 
 
-</script>
-</body>
-
-</html>
