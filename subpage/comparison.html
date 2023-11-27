@@ -1,5 +1,5 @@
 <style type="text/css">
-  .container1 {
+  .comparison-container1 {
     display: flex;
     flex-direction: column;
     height: 76vh;
@@ -26,25 +26,25 @@
 
     <div style="display: flex;margin: auto;">
       <div style="width: 250px;">
-        <select id="select-tools" multiple placeholder="Target"></select>
+        <select id="comparison-select-tools" multiple placeholder="Target"></select>
       </div>
       <div style="width: 250px;margin-left: 10px;">
-        <select id="select-tools1" multiple placeholder="Group by"></select>
+        <select id="comparison-select-tools1" multiple placeholder="Group by"></select>
       </div>
-      <button id="apply-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
+      <button id="comparison-apply-btn" type="button" class="btn btn-primary" style="margin-left: 10px;">
         Apply
       </button>
 
       <div style="width: 120px;margin-left: 10px;">
-        <select id="select-tools2" multiple placeholder="Sort by"></select>
+        <select id="comparison-select-tools2" multiple placeholder="Sort by"></select>
       </div>
       <div style="margin: auto;margin-left: 10px;">
-        <button id="sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true" style="height: 30px;"></button>
+        <button id="comparison-sort-icon" class="glyphicon glyphicon-sort" aria-hidden="true" style="height: 30px;"></button>
       </div>
     </div>
   </div>
 
-  <div class="container1">
+  <div class="comparison-container1">
   </div>
 
 
@@ -53,7 +53,7 @@
   <script type="text/javascript">
 
 
-    var $select = $('#select-tools').selectize({
+    var $select = $('#comparison-select-tools').selectize({
       plugins: ["remove_button"],
       maxItems: 1,
       maxOptions: 100,
@@ -64,7 +64,7 @@
       create: false,
     });
 
-    var $select1 = $('#select-tools1').selectize({
+    var $select1 = $('#comparison-select-tools1').selectize({
       plugins: ["remove_button"],
       maxItems: 1,
       maxOptions: 100,
@@ -75,7 +75,7 @@
       create: false
     });
 
-    var $select2 = $('#select-tools2').selectize({
+    var $select2 = $('#comparison-select-tools2').selectize({
       plugins: ["remove_button"],
       maxItems: 1,
       maxOptions: 2,
@@ -101,7 +101,7 @@
       }
     });
 
-    var sortIcon = $('#sort-icon')
+    var sortIcon = $('#comparison-sort-icon')
     sortIcon.click(function () {
       sortOrder = sortOrder == 1 ? 0 : 1
       draw(res, allLayout, allPvalue)
@@ -276,11 +276,11 @@
 
     var page = 0
     var groupValue = ""
-    $("#apply-btn").click(function () {
+    $("#comparison-apply-btn").click(function () {
       res = new Map()
       page = 0
-      const targetValue = $('#select-tools').text();
-      groupValue = $('#select-tools1').text();
+      const targetValue = $('#comparison-select-tools').text();
+      groupValue = $('#comparison-select-tools1').text();
       let uniqueValue = allUniqueValue.get(groupValue);
       uniqueValue = uniqueValue.sort()
 
@@ -395,7 +395,7 @@
     }
 
     function draw(res, allLayout, allPvalue) {
-      $('.container1').empty();
+      $('.comparison-container1').empty();
       let boxIndex = 0
       let allKeys = Array.from(res.keys())
       if (sortKey === 2) {
@@ -433,7 +433,7 @@
           charDiv = $('<div class="char-div"></div>');
           charDiv.attr('id', `myDiv${boxIndex}`);
           newBox.append(charDiv);
-          $('.container1').append(newBox);
+          $('.comparison-container1').append(newBox);
         } else {
           let newBox = $('#box' + Math.floor(boxIndex / 2))
           charDiv = $('<div class="char-div"></div>');
