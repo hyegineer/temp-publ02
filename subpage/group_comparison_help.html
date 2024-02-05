@@ -1,0 +1,117 @@
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<style>
+section {
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+p,h1,h2,h3,h4,h5,h6{
+    padding : 5px;
+    margin-bottom: 5px;
+}
+hr{
+    margin-bottom : 5px;
+}
+</style>
+<div class="container" style ="width:90%; height:100%;">
+    <div class ="manual-content" style="
+        position: absolute;
+        top: 10px;left: 400px;">
+        <div id="contents-header">
+        <h1>About Group Comparison</h1><hr>
+        <h4>
+            In this page, you can compare the target with grouping by meta information of NMF cluster (ex: sex, DX, Subtype, etc.)
+        </h4>
+
+        <p>
+            You can choose the target in protein/RNA/phosphosite/acetylsite. <br>
+
+            <p>The t-test (Test statistic) is divided by the number of groups.</p>
+            <p>If the number of groups is 2, t-test is progressing by the Wilcoxon Rank-Sum Test (= Mann-Whitney U-test).</p>
+            <p>Moreover, if the number of groups is over 3, it is progressing by the Kruskal-Wallis test (= One way ANOVA on rank).</p>
+        </p>
+        </div>
+        <div class="section1">
+            <h3>Basic functions</h3> <hr>
+            <section>
+                <h4>1. Apply button</h4> <hr>
+                <p>You can choose the target in the ①. After choosing the target to compare, please choose the meta information in the ②.</p> 
+                <p>Please choose the 'Apply' button. Finally you are able to compare the target with meta information!</p> <br>
+                <img width="1054" alt="group_comparison_apply" src="../file/assets/img/group_comparison/group_comparison1.png">
+            </section>
+
+            <section>
+                <h4>2. Sort button</h4><hr>
+                <p>You can sort the results of grouping information by only clicking the 'Sort by' (①). It consists of 'P-Value' and 'Gene Name'. </p>
+                <p>You can also adjust the ascending/descending order by clicking the ②.</p><br>
+                If you click the 'Legend' button, you can get the information of NMF cluster data like below.
+                <br>
+                <img width="1054" alt="group_comparison_sort" src="../file/assets/img/group_comparison/group_comparison_sort.png">
+            </section>
+        </div>
+        <div class="section2">
+            <h3>Tab funtions</h3><br>
+            <section>
+                <h4>1. Zoom in & Zoom out</h4><hr>
+                <p>If you want to zoom in & out, just cklik the zoom button. You can control the zoom function by clicking the button.</p><br>
+                <img width="1054" alt="group_comparison_zoom" src="../file/assets/img/group_comparison/group_comparison_zoom.png">
+            </section>
+
+            <section>
+                <h4>2. Save plot as image</h4><hr>
+                <p>After group comparing, you may want to save the result. Then click the button to save plot as image.</p><br>
+                <img width="1054" alt="group_comparison_save_img" src="../file/assets/img/group_comparison/group_comparison_saveimg.png">               
+            </section>
+        </div>
+    </div>
+	<div class="row">
+        <div style="width:300px; padding: 8px 0; left:3px; position:fixed;">
+            <div style="overflow-y: scroll; overflow-x: hidden; height: 100%;">
+                <ul class="nav nav-list">
+                    <li><label class="tree-toggler nav-header">NMF Cluster</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/nmf_help.html">NMF cluster</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Immune Cluster</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/immune_help.html">Immune Cluster</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Group Comparison</label>
+                        <ul class="nav nav-list tree">
+                            <li class = item-1 current active>
+                                <a class="" href="/subpage/group_comparison_help.html" style="background-color:antiquewhite;">
+                                    <span class="sign"><i class="icon-play"></i></span>
+                                    <span class="lbl">Group Comparison</span> (current)
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Survival Analysis</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/survival_help.html">Survival Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>
+                </ul>
+            </div>
+        </div>
+	</div>
+</div>
+<script>
+    $(document).ready(function () {
+    $('label.tree-toggler').click(function () {
+        $(this).parent().children('ul.tree').toggle(300);
+    });
+});
+</script>

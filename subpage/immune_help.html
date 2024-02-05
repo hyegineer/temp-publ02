@@ -1,0 +1,123 @@
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<style>
+section {
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+p,h1,h2,h3,h4,h5,h6{
+    padding : 5px;
+    margin-bottom: 5px;
+}
+hr{
+   margin-bottom: 5px;
+}
+</style>
+<div class="container" style ="width:90%; height:100%;">
+    <div class ="manual-content" style="
+        position: absolute;
+        top: 10px;left: 400px;">
+        <div id="contents-header">
+        <h1>About Immnue Cluster</h1><hr>
+
+        <h4>
+            In this page, you can check the relationship between genes and patients information with Immune cluster data.
+        </h4>
+        </div>
+        <div class="section1">
+            <h3>Basic functions</h3><hr>
+            <section>
+                <h4>1. Click the apply button</h4>
+                <hr>
+                <p>If you want to check some genes, then insert genes in blank of 'Genes of interest' (①).</p>
+                <p>After inserting it, please push the 'Apply' button (②).</p>
+                <img width="1054" alt="apply_gene_immune" src="../file/assets/img/immune/apply_gene_immune.png">
+                <br>
+                <p>Then, you can check the heatmap which show the relationship between patient with chosen genes.</p>
+                <img width="1177" alt="after_apply_immune" src="../file/assets/img/immune/after_apply_immune.png">
+            </section>
+
+            <section>
+                <h4>2. Click the legend button</h4>
+                <hr>
+                <p>
+                <img width="820" alt="legend_button_immune" src="../file/assets/img/immune/legend_button_immune.png"><br>
+                If you click the 'Legend' button, you can get the information of Immune cluster data like below.<br>
+                <img width="1145" alt="legend_popup_immune" src="../file/assets/img/immune/legend_popup_immune.png">
+                </p>
+            </section>
+
+            <section>
+                <h4>3. Click the Link column</h4>
+                <hr>
+                <p>
+                You can see the Link column on the right side.<br>
+                <img width="189" alt="link_immune" src="../file/assets/img/immune/link_immune.png">
+                It means the Uniprot ID which have relationship with gene.<br>
+                <img width="818" alt="click_the_link_immune" src="../file/assets/img/immune/click_the_link_immune.png"><br>
+                It has a hyperlink to connect Uniprot site.
+                Therefore, if you click that ID, not starred 'X', you can move to Uniprot site.
+                <br>
+                <img width="837" alt="link_to_uniprot_immune" src="../file/assets/img/immune/link_to_uniprot_immune.png">
+                <br>
+                </p>
+            </section>
+        </div>
+        <div class="section2">
+            <h3>Tab funtions</h3><br>
+            <section>
+                <p>It consists of <a href="https://software.broadinstitute.org/morpheus/tutorial.html">Morpheus</a>functions.</p>
+                <p>Therefore, if you want to check how to use tab function, please follow the <a href="https://software.broadinstitute.org/morpheus/tutorial.html"> Morpheus tutorial</a>.</p>
+            </section>
+        </div>
+    </div>
+	<div class="row">
+        <div style="width:300px; padding: 8px 0; left:3px; position:fixed;">
+            <div style="overflow-y: scroll; overflow-x: hidden; height: 100%;">
+                <ul class="nav nav-list">
+                    <li><label class="tree-toggler nav-header">NMF Cluster</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/nmf_help.html">NMF cluster</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Immune Cluster</label>
+                        <ul class="nav nav-list tree">
+                            <li class = item-1 current active>
+                                <a href="/subpage/immune_help.html" style="background-color:antiquewhite;">
+                                    <span class="sign"><i class="icon-play"></i></span>
+                                    <span class="lbl">Immune Cluster</span> (current)
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Group Comparison</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/group_comparison_help.html">Group Comparison</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Survival Analysis</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/survival_help.html">Survival Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>
+                </ul>
+            </div>
+        </div>
+	</div>
+</div>
+<script>
+    $(document).ready(function () {
+    $('label.tree-toggler').click(function () {
+        $(this).parent().children('ul.tree').toggle(300);
+    });
+});
+</script>

@@ -1,0 +1,107 @@
+<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<style>
+section {
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+p,h1,h2,h3,h4,h5,h6{
+    padding : 5px;
+    margin-bottom: 5px;
+}
+hr{
+    margin-bottom : 5px;
+}
+</style>
+<div class="container" style ="width:90%; height:100%;">
+    <div class ="manual-content" style="
+        position: absolute;
+        top: 10px;left: 400px;">
+        <div id="contents-header">
+            <h1>About Survival Analysis</h1><hr>
+            <h4>In this page, you can check the survial analysis about the protein/phosphosite/acetylsite/RNA based on month.</h4>
+            <p>By using the Plotly.js library, the survial plots are arranged as the target into the line chart. P-value is calculated with the rank-sum, and the Expression is divided into high/low. Furthermore, '|' is expressed the deceased patient in the plot.</p>
+            <p>By using the Selectize.js library, search efficiency is improved to implement an auto-match function when input is made in the target search input box.</p>
+        </div>
+
+        <div class="section1">
+            <h3>Basic functions</h3> <hr>
+            <section>
+                <h4>1. Apply button</h4> <hr>
+                <p>YYou can choose the target in the ①. After choosing the target to check, please click the 'Apply' button (②).</p> 
+                <p>Finally you are able to get the line chart with the P-value</p> <br>
+                <img width="1054" alt="survival_apply" src="../file/assets/img/survival/survival_apply.png">
+            </section>
+
+            <section>
+                <h4>2. Sort button</h4><hr>
+                <p>You can sort the box plot by only clicking the 'Sort by' (①). It consists of 'P-Value' and 'Gene Name'.</p>
+                <p>You can also adjust the ascending/descending order by clicking the ②.</p><br>
+                <img width="1054" alt="survival_sort" src="../file/assets/img/survival/survival_sort.png">
+            </section>
+        </div>
+        <div class="section2">
+            <h3>Tab funtions</h3><br>
+            <section>
+                <h4>1. Zoom in & Zoom out</h4><hr>
+                <p>If you want to zoom in & out, just cklik the zoom button. You can control the zoom function by clicking the button.</p><br>
+                <img width="1054" alt="survival_zoom" src="../file/assets/img/survival/survival_zoom.png">
+            </section>
+
+            <section>
+                <h4>2. Save plot as image</h4><hr>
+                <p>You may want to save the box plot data. Then click the button to save plot as image.</p><br>
+                <img width="1054" alt="survival_save_img" src="../file/assets/img/survival/survival_save.png">
+            </section>
+        </div>
+    </div>
+	<div class="row">
+        <div style="width:300px; padding: 8px 0; left:3px; position:fixed;">
+            <div style="overflow-y: scroll; overflow-x: hidden; height: 100%;">
+                <ul class="nav nav-list">
+                    <li><label class="tree-toggler nav-header">NMF Cluster</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/nmf_help.html">NMF cluster</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Immune Cluster</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/immune_help.html">Immune Cluster</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="divider"></li>
+                    <li><label class="tree-toggler nav-header">Group Comparison</label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="/subpage/group_comparison_help.html">Group Comparison</a></li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>    
+                    <li><label class="tree-toggler nav-header">Survival Analysis</label>
+                        <ul class="nav nav-list tree">
+                            <li class = item-1 current active>
+                                <a class="" href="/subpage/survival_help.html" style="background-color:antiquewhite;">
+                                    <span class="sign"><i class="icon-play"></i></span>
+                                    <span class="lbl">Survival Analysis</span> (current)
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="divider"></li>
+                </ul>
+            </div>
+        </div>
+	</div>
+</div>
+<script>
+    $(document).ready(function () {
+    $('label.tree-toggler').click(function () {
+        $(this).parent().children('ul.tree').toggle(300);
+    });
+});
+</script>
