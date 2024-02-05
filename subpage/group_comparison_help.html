@@ -8,12 +8,25 @@ section {
   padding: 10px;
   margin-bottom: 10px;
 }
-p,h1,h2,h3,h4,h5,h6{
+h1,h2,h3,h4,h5,h6{
     padding : 5px;
     margin-bottom: 5px;
+    
+}
+img{
+    margin-top : 15px;
+    margin-bottom: 15px;
+}
+p{
+    padding : 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    color: rgb(100, 100, 100);
 }
 hr{
-    margin-bottom : 5px;
+    margin-bottom: 5px;
 }
 </style>
 <div class="container" style ="width:90%; height:100%;">
@@ -26,12 +39,12 @@ hr{
             In this page, you can compare the target with grouping by meta information of NMF cluster (ex: sex, DX, Subtype, etc.)
         </h4>
 
-        <p>
+        <h5>
             You can choose the target in protein/RNA/phosphosite/acetylsite. <br>
 
-            <p>The t-test (Test statistic) is divided by the number of groups.</p>
-            <p>If the number of groups is 2, t-test is progressing by the Wilcoxon Rank-Sum Test (= Mann-Whitney U-test).</p>
-            <p>Moreover, if the number of groups is over 3, it is progressing by the Kruskal-Wallis test (= One way ANOVA on rank).</p>
+            <h5>The t-test (Test statistic) is divided by the number of groups.</h5>
+            <h5>If the number of groups is 2, t-test is progressing by the Wilcoxon Rank-Sum Test (= Mann-Whitney U-test).</h5>
+            <h5>Moreover, if the number of groups is over 3, it is progressing by the Kruskal-Wallis test (= One way ANOVA on rank).</h5>
         </p>
         </div>
         <div class="section1">
@@ -39,31 +52,33 @@ hr{
             <section>
                 <h4>1. Apply button</h4> <hr>
                 <p>You can choose the target in the ①. After choosing the target to compare, please choose the meta information in the ②.</p> 
-                <p>Please choose the 'Apply' button. Finally you are able to compare the target with meta information!</p> <br>
+                <p>Please choose the 'Apply' button. Finally you are able to compare the target with meta information!</p>
                 <img width="1054" alt="group_comparison_apply" src="../file/assets/img/group_comparison/group_comparison1.png">
+                <hr>
             </section>
 
             <section>
                 <h4>2. Sort button</h4><hr>
                 <p>You can sort the results of grouping information by only clicking the 'Sort by' (①). It consists of 'P-Value' and 'Gene Name'. </p>
-                <p>You can also adjust the ascending/descending order by clicking the ②.</p><br>
-                If you click the 'Legend' button, you can get the information of NMF cluster data like below.
-                <br>
+                <p>You can also adjust the ascending/descending order by clicking the ②.</p>
+                <p>If you click the 'Legend' button, you can get the information of NMF cluster data like below.</p>
                 <img width="1054" alt="group_comparison_sort" src="../file/assets/img/group_comparison/group_comparison_sort.png">
+                <hr>
             </section>
         </div>
         <div class="section2">
             <h3>Tab funtions</h3><br>
             <section>
                 <h4>1. Zoom in & Zoom out</h4><hr>
-                <p>If you want to zoom in & out, just cklik the zoom button. You can control the zoom function by clicking the button.</p><br>
+                <p>If you want to zoom in & out, just cklik the zoom button. You can control the zoom function by clicking the button.</p>
                 <img width="1054" alt="group_comparison_zoom" src="../file/assets/img/group_comparison/group_comparison_zoom.png">
             </section>
 
             <section>
                 <h4>2. Save plot as image</h4><hr>
-                <p>After group comparing, you may want to save the result. Then click the button to save plot as image.</p><br>
+                <p>After group comparing, you may want to save the result. Then click the button to save plot as image.</p>
                 <img width="1054" alt="group_comparison_save_img" src="../file/assets/img/group_comparison/group_comparison_saveimg.png">               
+                <hr>
             </section>
         </div>
     </div>
